@@ -43,29 +43,36 @@ export default function Presentation() {
                 alt="Dar Al Khalij Logo"
               />
             </div>
-            <div className="flex space-x-1 sm:space-x-4 overflow-x-auto no-scrollbar">
-              {[
-                { id: "hero", label: "Overview" },
-                { id: "summary", label: "Summary" },
-                { id: "dilemma", label: "Dilemma" },
-                { id: "pathways", label: "Pathways" },
-                { id: "scorecard", label: "Scorecard" },
-                { id: "financials", label: "Financials" },
-                { id: "detailed", label: "Full Report" },
-                { id: "recommendation", label: "Verdict" },
-              ].map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => scrollTo(item.id)}
-                  className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
-                    activeSection === item.id
-                      ? "bg-teal-600 text-white shadow-md"
-                      : "text-slate-300 hover:text-white hover:bg-slate-800"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              ))}
+            <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto no-scrollbar">
+              <div className="flex space-x-1 sm:space-x-4">
+                {[
+                  { id: "hero", label: "Overview" },
+                  { id: "summary", label: "Summary" },
+                  { id: "dilemma", label: "Dilemma" },
+                  { id: "pathways", label: "Pathways" },
+                  { id: "scorecard", label: "Scorecard" },
+                  { id: "financials", label: "Financials" },
+                  { id: "detailed", label: "Full Report" },
+                  { id: "recommendation", label: "Verdict" },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollTo(item.id)}
+                    className={`px-3 py-2 text-xs sm:text-sm font-medium rounded-md transition-all whitespace-nowrap ${
+                      activeSection === item.id
+                        ? "bg-teal-600 text-white shadow-md"
+                        : "text-slate-300 hover:text-white hover:bg-slate-800"
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+              <img
+                src="/taqa-logo.png"
+                className="h-7 sm:h-9 w-auto object-contain shrink-0"
+                alt="TAQA Logo"
+              />
             </div>
           </div>
         </div>

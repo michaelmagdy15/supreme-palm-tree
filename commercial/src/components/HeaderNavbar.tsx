@@ -116,10 +116,15 @@ export default function HeaderNavbar({
         </div>
 
         {/* Top Right Actions Section */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
+          <img
+            src="/taqa-logo.png"
+            className="h-7 sm:h-9 w-auto object-contain"
+            alt="TAQA Logo"
+          />
           <div className="hidden sm:flex items-center gap-3 bg-slate-950/40 border border-slate-800/60 p-1 rounded-lg">
             <span className="px-2 py-1 text-[10px] font-bold text-cyan-400 bg-cyan-500/10 rounded tracking-wider uppercase">
-              TAQA Feasibility
+              Feasibility Study
             </span>
           </div>
 
