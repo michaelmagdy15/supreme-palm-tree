@@ -1,0 +1,14 @@
+# Dependencies
+**/node_modules/
+**/package-lock.json
+
+# Next.js build output
+**/.next/
+**/out/
+
+# TypeScript cache
+**/*.tsbuildinfo
+
+# OS files
+.DS_Store
+Thumbs.db
