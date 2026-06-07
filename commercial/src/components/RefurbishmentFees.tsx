@@ -680,7 +680,7 @@ export default function RefurbishmentFees({
                 </button>
               </div>
               {/* Fee Adjusters section */}
-              <div className="mt-6 pt-6 border-t border-slate-800 space-y-4">
+              <div className="mt-6 pt-6 border-t border-slate-800 space-y-4 no-print">
                 <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
                   <Calculator className="h-3.5 w-3.5 text-rose-500" />
                   Adjust Base Scope Fees (Option 1)
@@ -777,7 +777,7 @@ export default function RefurbishmentFees({
             </div>
           </div>
           {/* Interactive Line Items List / Table */}
-          <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden">
+          <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden print-page-break">
                         {/* Table Header Controls */}
             <div className="p-5 border-b border-slate-800 bg-slate-900/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>

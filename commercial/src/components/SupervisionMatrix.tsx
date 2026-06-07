@@ -476,7 +476,7 @@ export default function SupervisionMatrix({ roles, setRoles, activeScenario, set
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
+          <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto no-print">
             {/* Scenarios Panel */}
             <div className="bg-[#0B1528] p-1 rounded-lg border border-[#1E2E4F]/50 flex items-center gap-1 w-full sm:w-auto">
               <button
