@@ -21,8 +21,8 @@ export default function CostComparisonChart() {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
   // Financial Figures (AED)
-  const supervisionCost = 1294200;
-  const sustainabilityCost = 45000;
+  const supervisionCost = 1141200;
+  const sustainabilityCost = 39600;
   const p1ForensicDesign = 680000;
   const p2CleanDesign = 380000;
 
@@ -60,7 +60,7 @@ export default function CostComparisonChart() {
           <Leaf className={`h-4 w-4 transition-colors ${includeSustainability ? 'text-cyan-400' : 'text-slate-500'}`} />
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-slate-200 leading-none">Sustainability Option</span>
-            <span className="text-[10px] text-slate-400 mt-0.5">+AED 45,000 PQP Supervision</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">+AED 39,600 PQP Supervision</span>
           </div>
           <button
             onClick={() => setIncludeSustainability(!includeSustainability)}
@@ -378,12 +378,12 @@ export default function CostComparisonChart() {
             )}
             {(hoveredSegment === 'p1-supervision' || hoveredSegment === 'p2-supervision') && (
               <p>
-                <strong className="text-slate-800 font-semibold">Supervision Role (AED 1,294,200):</strong> The core consultancy, project management, and site supervision costs which remain static across both development paths.
+                <strong className="text-slate-800 font-semibold">Supervision Role (AED 1,141,200):</strong> The core consultancy, project management, and site supervision costs which remain static across both development paths.
               </p>
             )}
             {(hoveredSegment === 'p1-sustainability' || hoveredSegment === 'p2-sustainability') && (
               <p>
-                <strong className="text-teal-600 font-semibold">Sustainability / PQP Role (AED 45,000):</strong> The optional sustainability role ensures Estidama compliance, tracking materials provenance and carbon footprint reduction objectives.
+                <strong className="text-teal-600 font-semibold">Sustainability / PQP Role (AED 39,600):</strong> The optional sustainability role ensures Estidama compliance, tracking materials provenance and carbon footprint reduction objectives.
               </p>
             )}
           </div>

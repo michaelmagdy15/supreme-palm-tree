@@ -45,7 +45,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "technical",
     duration: 18,
     allocation: 100,
-    rate: 45000,
+    rate: 36000,
     description: "Lead Project Manager responsible for overall contract execution, client liaison, and site management.",
     tooltip: "Full-time project management resource deployed for the entire 18 months supervision phase.",
     isActive: true
@@ -67,7 +67,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "technical",
     duration: 18,
     allocation: 10,
-    rate: 30000,
+    rate: 28000,
     description: "Architectural & Interior Design Supervisor reviewing fit-outs, spatial integration, and finishing quality.",
     tooltip: "Supervision support (10% allocation) aligned with finishing works.",
     isActive: true
@@ -111,7 +111,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "optional",
     duration: 18,
     allocation: 10,
-    rate: 25000,
+    rate: 22000,
     description: "Estidama Pearl Qualified Professional / Sustainability Engineer overseeing green ratings and energy compliance.",
     tooltip: "Toggled role for green building Estidama certification compliance (10% allocation).",
     isActive: true
@@ -122,7 +122,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "technical",
     duration: 18,
     allocation: 10,
-    rate: 16000,
+    rate: 18000,
     description: "Civil inspector verifying daily structural concrete pours, steel reinforcement, and masonry work.",
     tooltip: "Daily civil works monitoring and site inspection (10% allocation) for 18 months.",
     isActive: true
@@ -133,7 +133,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "technical",
     duration: 18,
     allocation: 10,
-    rate: 15000,
+    rate: 18000,
     description: "Mechanical inspector verifying daily HVAC ducting, plumbing pressure tests, and firefighting piping.",
     tooltip: "Daily mechanical installations inspection (10% allocation) for 18 months.",
     isActive: true
@@ -144,7 +144,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "technical",
     duration: 18,
     allocation: 10,
-    rate: 15000,
+    rate: 18000,
     description: "Electrical inspector conducting daily audits of conduits, wiring, and DB terminations on site.",
     tooltip: "Daily electrical safety and installation inspection (10% allocation) for 18 months.",
     isActive: true
@@ -177,7 +177,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "support",
     duration: 18,
     allocation: 10,
-    rate: 18000,
+    rate: 20000,
     description: "Health, Safety & Environment engineer enforcing local safety codes and environmental regulations.",
     tooltip: "HSE safety compliance and incident prevention (10% allocation) for 18 months.",
     isActive: true
@@ -188,7 +188,7 @@ const DEFAULT_ROLES: RoleData[] = [
     category: "support",
     duration: 18,
     allocation: 10,
-    rate: 15000,
+    rate: 12000,
     description: "Document controller administering logs of RFIs, technical submittals, and authority letters.",
     tooltip: "Correspondence record management and file archiving (10% allocation) for 18 months.",
     isActive: true

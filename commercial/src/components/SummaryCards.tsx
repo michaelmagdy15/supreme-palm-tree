@@ -54,8 +54,8 @@ export default function SummaryCards() {
 
   // Site Supervision states
   const [includeOptional, setIncludeOptional] = useState(false);
-  const coreSupervision = 1294200;
-  const optionalSupervision = 45000;
+  const coreSupervision = 1141200;
+  const optionalSupervision = 39600;
   const totalSupervision = includeOptional
     ? coreSupervision + optionalSupervision
     : coreSupervision;
@@ -294,7 +294,7 @@ export default function SummaryCards() {
               <div className="flex justify-between items-center">
                 <span className="text-slate-500">Core Services:</span>
                 <span className="font-semibold text-slate-700 dark:text-slate-300">
-                  AED 1,294,200
+                  AED 1,141,200
                 </span>
               </div>
               <div
@@ -308,7 +308,7 @@ export default function SummaryCards() {
                   Optional Services:
                   {includeOptional && <CheckCircle2 className="w-3.5 h-3.5" />}
                 </span>
-                <span className="font-semibold">AED 45,000</span>
+                <span className="font-semibold">AED 39,600</span>
               </div>
             </div>
           </div>
