@@ -112,7 +112,7 @@ export default function CostComparisonChart({ totalFee, roles, setRoles, refurbT
       </div>
 
       {/* KPI Cards (Crisp White Surfaces for Corporate Presentation Contrast) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 print-grid-3">
         
         {/* Pathway 1 Card */}
         <div className="bg-white text-slate-900 rounded-2xl p-6 shadow-lg border border-slate-100 flex flex-col justify-between relative overflow-hidden">

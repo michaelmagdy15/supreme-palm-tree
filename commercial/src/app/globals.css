@@ -32,16 +32,18 @@ body {
   }
   
   html, body {
-    width: 297mm;
+    width: 100% !important;
+    max-width: 100% !important;
     background-color: #070b13 !important;
     color: #ffffff !important;
-    font-size: 10pt;
+    font-size: 8.5pt;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    overflow: visible !important;
   }
 
-  /* Hide navigation, sidebar, buttons, and other non-printable components */
-  header, aside, nav, button, .no-print, [role="switch"], .tab-buttons {
+  /* Hide navigation, sidebar, buttons, inputs, and other non-printable components */
+  header, aside, nav, button, .no-print, [role="switch"], .tab-buttons, input[type="range"] {
     display: none !important;
   }
 
@@ -50,7 +52,9 @@ body {
     padding: 0 !important;
     margin: 0 !important;
     width: 100% !important;
+    max-width: 100% !important;
     background: transparent !important;
+    overflow: visible !important;
   }
 
   /* Unhide printable sections */
@@ -59,41 +63,37 @@ body {
   }
 
   .print-page-break {
-    page-break-after: always !important;
-    break-after: page !important;
+    page-break-before: always !important;
+    break-before: page !important;
     clear: both;
     display: block !important;
     width: 100% !important;
   }
 
-  /* Coerce grids for landscape page sizes */
+  /* Disable overflow hidden so content breaks across pages instead of getting cut off */
+  div, section, main, article, table, tbody, tr {
+    overflow: visible !important;
+  }
+
+  /* Coerce grids for landscape page sizes - stack columns by default for readability */
   .grid {
     display: grid !important;
+    grid-template-columns: 1fr !important;
     gap: 1rem !important;
   }
   
-  @media (min-width: 768px) {
-    .md\:grid-cols-2 {
-      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    }
-    .md\:grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    }
-    .md\:grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
+  /* Print grid overrides to allow columns where appropriate in landscape */
+  .print-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .print-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+  .print-grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
   }
 
-  @media (min-width: 1024px) {
-    .lg\:grid-cols-3 {
-      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-    }
-    .lg\:grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-    }
-  }
-
-  /* Prevent split columns and page overflow */
+  /* Prevent split elements where possible */
   .card, .panel, .dashboard-card, tr, tbody {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
@@ -104,5 +104,19 @@ body {
     max-height: 100% !important;
     page-break-inside: avoid !important;
     break-inside: avoid !important;
+  }
+
+  /* Ensure containers do not exceed viewport width */
+  .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl, .max-w-3xl, .max-w-2xl, .max-w-xl {
+    max-width: 100% !important;
+  }
+
+  /* Render text boxes as plain text when printing adjusters */
+  input[type="text"] {
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+    color: #ffffff !important;
+    text-align: right !important;
   }
 }

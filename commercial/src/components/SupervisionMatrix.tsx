@@ -534,7 +534,7 @@ export default function SupervisionMatrix({ roles, setRoles, activeScenario, set
         </div>
 
         {/* Bento Board / Financial KPI Highlights */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8 print-grid-4">
           {/* Grand Total Cost Card */}
           <motion.div
             layoutId="grand-total-card"
@@ -1085,7 +1085,7 @@ export default function SupervisionMatrix({ roles, setRoles, activeScenario, set
             </h3>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center print-grid-2">
             {/* Left side: Stacked Progress visualization */}
             <div className="flex flex-col gap-3">
               <div className="text-xs text-slate-400 leading-relaxed mb-1">

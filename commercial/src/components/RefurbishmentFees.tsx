@@ -1004,7 +1004,7 @@ export default function RefurbishmentFees({
         </div>
 
         {/* CONTRAST PANEL: OPTION 1 VS STRATEGIC REALITY */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 print-grid-2">
           
           {/* Card: Option 1 structural liability */}
           <div className="bg-[#0b1323] border border-rose-950/30 rounded-xl p-6 relative overflow-hidden shadow-xl">

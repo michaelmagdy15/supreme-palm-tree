@@ -127,7 +127,7 @@ export default function Home() {
         </div>
 
         {/* Site Supervision Section */}
-        <div className={`${activeTab === "Site Supervision" ? "block" : "hidden print:block"} rounded-2xl overflow-hidden border border-slate-800/80 shadow-2xl`}>
+        <div className={`${activeTab === "Site Supervision" ? "block" : "hidden print:block"} print-page-break rounded-2xl overflow-hidden border border-slate-800/80 shadow-2xl`}>
           <SupervisionMatrix roles={roles} setRoles={setRoles} activeScenario={activeScenario} setActiveScenario={setActiveScenario} />
         </div>
       </div>

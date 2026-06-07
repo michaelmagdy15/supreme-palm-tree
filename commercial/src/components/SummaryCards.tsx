@@ -126,7 +126,7 @@ export default function SummaryCards({ totalFee, roles, setRoles, refurbTotal, r
 
   return (
     <div className="w-full">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 print-grid-4">
         
         {/* Card 1: Option 2 Design Cost */}
         <motion.div
