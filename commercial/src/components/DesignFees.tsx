@@ -98,10 +98,32 @@ const PRESETS = [
   { label: "Flagship Corporate Complex", value: 1200000 }
 ];
 
-export default function DesignFees() {
-  const [totalFee, setTotalFee] = useState<number>(380000);
-  const [feeInput, setFeeInput] = useState<string>("380,000");
+interface DesignFeesProps {
+  totalFee: number;
+  setTotalFee: React.Dispatch<React.SetStateAction<number>>;
+}
+
+export default function DesignFees({ totalFee, setTotalFee }: DesignFeesProps) {
+  const [feeInput, setFeeInput] = useState<string>(totalFee.toLocaleString("en-US"));
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
+
+  // Sync feeInput when totalFee prop changes
+  React.useEffect(() => {
+    setFeeInput(totalFee.toLocaleString("en-US"));
+  }, [totalFee]);
+
+  // Load expandedPhase from localStorage on mount
+  React.useEffect(() => {
+    const savedExpanded = localStorage.getItem("commercial_design_expandedPhase");
+    if (savedExpanded) {
+      setExpandedPhase(savedExpanded === "null" ? null : parseInt(savedExpanded, 10));
+    }
+  }, []);
+
+  // Save expandedPhase to localStorage on change
+  React.useEffect(() => {
+    localStorage.setItem("commercial_design_expandedPhase", expandedPhase === null ? "null" : expandedPhase.toString());
+  }, [expandedPhase]);
 
   const formatAED = (value: number) => {
     return `AED ${value.toLocaleString("en-US", {

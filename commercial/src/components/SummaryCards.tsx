@@ -40,28 +40,86 @@ function AnimatedNumber({ value, prefix = "" }: AnimatedNumberProps) {
   );
 }
 
-export default function SummaryCards() {
+import { RoleData } from "./SupervisionMatrix";
+
+interface SummaryCardsProps {
+  totalFee: number;
+  roles: RoleData[];
+  setRoles: React.Dispatch<React.SetStateAction<RoleData[]>>;
+}
+
+export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCardsProps) {
   // Option 2 Design Cost states
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const designPhases = [
-    { name: "Concept Design", percent: 20, cost: 76000 },
-    { name: "Schematic Design", percent: 30, cost: 114000 },
-    { name: "Detailed Design", percent: 50, cost: 190000 },
+    { name: "Concept Design", percent: 20, cost: Math.round(totalFee * 0.20) },
+    { name: "Schematic Design", percent: 30, cost: Math.round(totalFee * 0.30) },
+    { name: "Detailed Design", percent: 45, cost: Math.round(totalFee * 0.45) },
+    { name: "Tender Package", percent: 5, cost: totalFee - Math.round(totalFee * 0.20) - Math.round(totalFee * 0.30) - Math.round(totalFee * 0.45) },
   ];
 
   // Option 1 Refurbishment Cost states
   const [showRiskDetail, setShowRiskDetail] = useState(false);
 
   // Site Supervision states
-  const [includeOptional, setIncludeOptional] = useState(false);
-  const coreSupervision = 1141200;
-  const optionalSupervision = 39600;
-  const totalSupervision = includeOptional
-    ? coreSupervision + optionalSupervision
-    : coreSupervision;
+  const calculateRoleCost = (role: RoleData) => {
+    if (!role.isActive) return 0;
+    return role.duration * (role.allocation / 100) * role.rate;
+  };
+
+  const coreSupervision = roles
+    .filter((r) => r.category !== "optional")
+    .reduce((sum, r) => sum + calculateRoleCost(r), 0);
+
+  const optionalRole = roles.find((r) => r.id === "sust");
+  const optionalSupervision = optionalRole && optionalRole.isActive ? calculateRoleCost(optionalRole) : 0;
+
+  const includeOptional = optionalRole ? optionalRole.isActive : false;
+  const setIncludeOptional = (val: boolean) => {
+    setRoles((prev) =>
+      prev.map((r) => {
+        if (r.id === "sust") {
+          const updatedAlloc = val && r.allocation === 0 ? 10 : r.allocation;
+          return { ...r, isActive: val, allocation: updatedAlloc };
+        }
+        return r;
+      })
+    );
+  };
+
+  const totalSupervision = coreSupervision + optionalSupervision;
 
   // Direct Value Add Ratio states
   const [activeTab, setActiveTab] = useState<"comparison" | "definition">("comparison");
+
+  // Load local UI states from localStorage on client mount
+  useEffect(() => {
+    const savedPhase = localStorage.getItem("commercial_summary_selectedPhase");
+    if (savedPhase) {
+      setSelectedPhase(savedPhase === "null" ? null : parseInt(savedPhase, 10));
+    }
+    const savedRiskDetail = localStorage.getItem("commercial_summary_showRiskDetail");
+    if (savedRiskDetail) {
+      setShowRiskDetail(savedRiskDetail === "true");
+    }
+    const savedActiveTab = localStorage.getItem("commercial_summary_activeTab");
+    if (savedActiveTab) {
+      setActiveTab(savedActiveTab as "comparison" | "definition");
+    }
+  }, []);
+
+  // Save local UI states to localStorage
+  useEffect(() => {
+    localStorage.setItem("commercial_summary_selectedPhase", selectedPhase === null ? "null" : selectedPhase.toString());
+  }, [selectedPhase]);
+
+  useEffect(() => {
+    localStorage.setItem("commercial_summary_showRiskDetail", showRiskDetail.toString());
+  }, [showRiskDetail]);
+
+  useEffect(() => {
+    localStorage.setItem("commercial_summary_activeTab", activeTab);
+  }, [activeTab]);
 
   return (
     <div className="w-full">
@@ -83,7 +141,7 @@ export default function SummaryCards() {
                   Option 2 Design Cost
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  AED 380,000
+                  AED {totalFee.toLocaleString()}
                 </h3>
               </div>
               <div className="p-2.5 bg-cyan-50 dark:bg-cyan-950/40 rounded-xl text-cyan-600 dark:text-cyan-400">
@@ -95,7 +153,7 @@ export default function SummaryCards() {
             <div className="mt-5">
               <div className="flex justify-between text-xs text-slate-500 mb-1.5">
                 <span>Phase Progress Allocation</span>
-                <span className="font-medium text-cyan-600 dark:text-cyan-400">3 Stages</span>
+                <span className="font-medium text-cyan-600 dark:text-cyan-400">4 Stages</span>
               </div>
               <div className="flex h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden cursor-pointer">
                 {designPhases.map((phase, idx) => (
@@ -107,7 +165,9 @@ export default function SummaryCards() {
                         ? "bg-cyan-400 dark:bg-cyan-500"
                         : idx === 1
                         ? "bg-cyan-500 dark:bg-cyan-400"
-                        : "bg-cyan-600 dark:bg-cyan-300"
+                        : idx === 2
+                        ? "bg-cyan-600 dark:bg-cyan-300"
+                        : "bg-cyan-700 dark:bg-cyan-200"
                     } ${
                       selectedPhase !== null && selectedPhase !== idx
                         ? "opacity-30"
@@ -131,15 +191,11 @@ export default function SummaryCards() {
                     exit={{ opacity: 0, y: -5 }}
                     className="text-xs text-slate-500 space-y-1"
                   >
-                    <p className="flex justify-between">
-                      <span>Concept Phase:</span> <span className="font-semibold text-slate-700 dark:text-slate-300">20%</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Schematic Phase:</span> <span className="font-semibold text-slate-700 dark:text-slate-300">30%</span>
-                    </p>
-                    <p className="flex justify-between">
-                      <span>Detailed Design:</span> <span className="font-semibold text-slate-700 dark:text-slate-300">50%</span>
-                    </p>
+                    {designPhases.map((phase) => (
+                      <p key={phase.name} className="flex justify-between">
+                        <span>{phase.name}:</span> <span className="font-semibold text-slate-700 dark:text-slate-300">{phase.percent}%</span>
+                      </p>
+                    ))}
                     <p className="text-[10px] text-slate-400 italic text-right mt-1">
                       Click the bars to drill down costs
                     </p>
@@ -195,7 +251,7 @@ export default function SummaryCards() {
                   Option 1 Refurbishment Cost
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  AED 680,000
+                  AED {(300000 + totalFee).toLocaleString()}
                 </h3>
               </div>
               <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 rounded-xl text-rose-600 dark:text-rose-400">
@@ -232,10 +288,10 @@ export default function SummaryCards() {
                   >
                     <div className="mt-2 text-[11px] text-slate-500 bg-rose-50/35 dark:bg-rose-950/10 rounded-lg p-2.5 border border-rose-100/30 dark:border-rose-900/30 space-y-1.5">
                       <p>
-                        <strong>Refurbishment Sunk Cost:</strong> 72% of expenditures cannot be salvaged or recovered if the building scope changes.
+                        <strong>Refurbishment Sunk Cost:</strong> {Math.round((300000 / (300000 + totalFee)) * 100)}% of expenditures cannot be salvaged or recovered if the building scope changes.
                       </p>
                       <p className="text-slate-400">
-                        Major items: structural reinforcements, custom MEP adaptation, and legacy shell demolition.
+                        Major items: forensic testing, structure diagnostics, concrete coring, and compiled as-built drawing redrafts.
                       </p>
                     </div>
                   </motion.div>
@@ -294,7 +350,7 @@ export default function SummaryCards() {
               <div className="flex justify-between items-center">
                 <span className="text-slate-500">Core Services:</span>
                 <span className="font-semibold text-slate-700 dark:text-slate-300">
-                  AED 1,141,200
+                  AED {coreSupervision.toLocaleString()}
                 </span>
               </div>
               <div
@@ -308,7 +364,7 @@ export default function SummaryCards() {
                   Optional Services:
                   {includeOptional && <CheckCircle2 className="w-3.5 h-3.5" />}
                 </span>
-                <span className="font-semibold">AED 39,600</span>
+                <span className="font-semibold">AED {optionalSupervision.toLocaleString()}</span>
               </div>
             </div>
           </div>
@@ -330,7 +386,7 @@ export default function SummaryCards() {
                   Direct Value Add Ratio
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  76% vs 48%
+                  100% vs {Math.round((totalFee / (300000 + totalFee)) * 100)}%
                 </h3>
               </div>
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl text-emerald-600 dark:text-emerald-400">
@@ -342,7 +398,7 @@ export default function SummaryCards() {
             <div className="mt-3 flex items-center justify-between">
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40">
                 <Sparkles className="w-3.5 h-3.5" />
-                +28% Option 2 Premium
+                +{100 - Math.round((totalFee / (300000 + totalFee)) * 100)}% Option 2 Premium
               </span>
               <button
                 onClick={() =>
@@ -369,19 +425,21 @@ export default function SummaryCards() {
                     <div>
                       <div className="flex justify-between text-[11px] text-slate-500 mb-0.5">
                         <span>Option 2 (Design)</span>
-                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">76%</span>
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">100%</span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-emerald-500" style={{ width: "76%" }} />
+                        <div className="h-full bg-emerald-500" style={{ width: "100%" }} />
                       </div>
                     </div>
                     <div>
                       <div className="flex justify-between text-[11px] text-slate-500 mb-0.5">
                         <span>Option 1 (Refurbishment)</span>
-                        <span className="font-semibold text-slate-600 dark:text-slate-400">48%</span>
+                        <span className="font-semibold text-slate-600 dark:text-slate-400">
+                          {Math.round((totalFee / (300000 + totalFee)) * 100)}%
+                        </span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: "48%" }} />
+                        <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: `${(totalFee / (300000 + totalFee)) * 100}%` }} />
                       </div>
                     </div>
                   </motion.div>

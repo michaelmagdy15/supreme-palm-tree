@@ -16,20 +16,50 @@ import {
   DollarSign
 } from 'lucide-react';
 
-export default function CostComparisonChart() {
-  const [includeSustainability, setIncludeSustainability] = useState(false);
+import { RoleData } from "./SupervisionMatrix";
+
+interface CostComparisonChartProps {
+  totalFee: number;
+  roles: RoleData[];
+  setRoles: React.Dispatch<React.SetStateAction<RoleData[]>>;
+}
+
+export default function CostComparisonChart({ totalFee, roles, setRoles }: CostComparisonChartProps) {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
-  // Financial Figures (AED)
-  const supervisionCost = 1141200;
-  const sustainabilityCost = 39600;
-  const p1ForensicDesign = 680000;
-  const p2CleanDesign = 380000;
+  // Helper cost calculations
+  const calculateRoleCost = (role: RoleData) => {
+    if (!role.isActive) return 0;
+    return role.duration * (role.allocation / 100) * role.rate;
+  };
+
+  const supervisionCost = roles
+    .filter((r) => r.category !== "optional")
+    .reduce((sum, r) => sum + calculateRoleCost(r), 0);
+
+  const optionalRole = roles.find((r) => r.id === "sust");
+  const sustainabilityCost = optionalRole && optionalRole.isActive ? calculateRoleCost(optionalRole) : 0;
+
+  const includeSustainability = optionalRole ? optionalRole.isActive : false;
+  const setIncludeSustainability = (val: boolean) => {
+    setRoles((prev) =>
+      prev.map((r) => {
+        if (r.id === "sust") {
+          const updatedAlloc = val && r.allocation === 0 ? 10 : r.allocation;
+          return { ...r, isActive: val, allocation: updatedAlloc };
+        }
+        return r;
+      })
+    );
+  };
+
+  const p1ForensicDesign = 300000 + totalFee;
+  const p2CleanDesign = totalFee;
 
   // Calculations
   const p1Total = p1ForensicDesign + supervisionCost + (includeSustainability ? sustainabilityCost : 0);
   const p2Total = p2CleanDesign + supervisionCost + (includeSustainability ? sustainabilityCost : 0);
-  const savings = p1Total - p2Total; // AED 300,000
+  const savings = p1Total - p2Total;
 
   // Format helper
   const formatAED = (value: number) => {
@@ -246,7 +276,7 @@ export default function CostComparisonChart() {
                 {hoveredSegment === 'p1-forensic' ? (
                   <span className="text-[10px] tracking-tight">Sunk Cost</span>
                 ) : (
-                  <span>24.5%</span>
+                  <span>{((p1ForensicDesign / maxPossibleCost) * 100).toFixed(1)}%</span>
                 )}
               </motion.div>
 
@@ -263,7 +293,7 @@ export default function CostComparisonChart() {
                 {hoveredSegment === 'p1-supervision' ? (
                   <span className="text-[10px] tracking-tight">Supervision</span>
                 ) : (
-                  <span>66.3%</span>
+                  <span>{((supervisionCost / maxPossibleCost) * 100).toFixed(1)}%</span>
                 )}
               </motion.div>
 
@@ -283,7 +313,7 @@ export default function CostComparisonChart() {
                     {hoveredSegment === 'p1-sustainability' ? (
                       <span className="text-[10px] tracking-tight">PQP Cost</span>
                     ) : (
-                      <span>9.1%</span>
+                      <span>{((sustainabilityCost / maxPossibleCost) * 100).toFixed(1)}%</span>
                     )}
                   </motion.div>
                 )}
@@ -312,7 +342,7 @@ export default function CostComparisonChart() {
                 {hoveredSegment === 'p2-design' ? (
                   <span className="text-[10px] tracking-tight">Clean Slate</span>
                 ) : (
-                  <span>10.5%</span>
+                  <span>{((p2CleanDesign / maxPossibleCost) * 100).toFixed(1)}%</span>
                 )}
               </motion.div>
 
@@ -329,7 +359,7 @@ export default function CostComparisonChart() {
                 {hoveredSegment === 'p2-supervision' ? (
                   <span className="text-[10px] tracking-tight">Supervision</span>
                 ) : (
-                  <span>66.3%</span>
+                  <span>{((supervisionCost / maxPossibleCost) * 100).toFixed(1)}%</span>
                 )}
               </motion.div>
 
@@ -349,7 +379,7 @@ export default function CostComparisonChart() {
                     {hoveredSegment === 'p2-sustainability' ? (
                       <span className="text-[10px] tracking-tight">PQP Cost</span>
                     ) : (
-                      <span>9.1%</span>
+                      <span>{((sustainabilityCost / maxPossibleCost) * 100).toFixed(1)}%</span>
                     )}
                   </motion.div>
                 )}
@@ -368,12 +398,12 @@ export default function CostComparisonChart() {
             )}
             {hoveredSegment === 'p1-forensic' && (
               <p>
-                <strong className="text-rose-600 font-semibold">Forensic &amp; Sunk Cost (AED 680,000):</strong> This premium reflects the intensive testing, concrete core sampling, and design adjustments necessary to adapt existing structures. It presents a major sunk-cost risk as legacy integrity concerns persist.
+                <strong className="text-rose-600 font-semibold">Option 1 Consultancy Cost (AED {(300000 + totalFee).toLocaleString()}):</strong> This premium reflects the AED 300,000 forensic &amp; sunk diagnostic testing combined with the design adjustment fees required to adapt existing structures.
               </p>
             )}
             {hoveredSegment === 'p2-design' && (
               <p>
-                <strong className="text-cyan-600 font-semibold">Clean Slate Value (AED 380,000):</strong> By starting with a new build, structural engineering risks drop significantly. Architectural fees are fully optimized around direct asset utility without structural remediation constraints.
+                <strong className="text-cyan-600 font-semibold">Clean Slate Value (AED {p2CleanDesign.toLocaleString()}):</strong> By starting with a new build, structural engineering risks drop significantly. Architectural fees are fully optimized around direct asset utility without structural remediation constraints.
               </p>
             )}
             {(hoveredSegment === 'p1-supervision' || hoveredSegment === 'p2-supervision') && (

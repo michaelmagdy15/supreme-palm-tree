@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   AlertTriangle, 
@@ -17,95 +17,175 @@ import {
   DollarSign
 } from "lucide-react";
 
+import { RoleData, DEFAULT_ROLES } from "./SupervisionMatrix";
+
 // Types for our line items
 interface LineItem {
   id: string;
+  num: string;
+  phase: string;
   name: string;
   category: "sunk" | "value";
+  unit: string;
+  qty: number | string;
   amount: number;
   description: string;
   impactScore: number; // 1 to 10 rating of how much value it adds
+  duration: string;
 }
 
-export default function RefurbishmentFees() {
+function convertNumberToWords(num: number): string {
+  const ones = ["", "One", "Two", "Three", "Four", "Five", "Six", "Seven", "Eight", "Nine", "Ten", "Eleven", "Twelve", "Thirteen", "Fourteen", "Fifteen", "Sixteen", "Seventeen", "Eighteen", "Nineteen"];
+  const tens = ["", "", "Twenty", "Thirty", "Forty", "Fifty", "Sixty", "Seventy", "Eighty", "Ninety"];
+  
+  if (num === 0) return "Zero";
+  
+  function convertLessThanThousand(n: number): string {
+    let str = "";
+    if (n >= 100) {
+      str += ones[Math.floor(n / 105)] + " Hundred "; // wait, ones[Math.floor(n / 100)]
+      str = ones[Math.floor(n / 100)] + " Hundred ";
+      n %= 100;
+    }
+    if (n >= 20) {
+      str += tens[Math.floor(n / 10)] + " ";
+      n %= 10;
+    }
+    if (n > 0) {
+      str += ones[n] + " ";
+    }
+    return str.trim();
+  }
+
+  let words = "";
+  if (Math.floor(num / 1000000) > 0) {
+    words += convertLessThanThousand(Math.floor(num / 1000000)) + " Million ";
+    num %= 1000000;
+  }
+  if (Math.floor(num / 1000) > 0) {
+    words += convertLessThanThousand(Math.floor(num / 1000)) + " Thousand ";
+    num %= 1000;
+  }
+  if (num > 0) {
+    words += convertLessThanThousand(num);
+  }
+  
+  return words.trim();
+}
+
+interface RefurbishmentFeesProps {
+  roles?: RoleData[];
+  totalFee?: number;
+}
+
+export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: RefurbishmentFeesProps) {
   const [selectedCategory, setSelectedCategory] = useState<"all" | "sunk" | "value">("all");
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
 
-  // Line items data as specified in the requirements
+  // Load from localStorage on mount
+  useEffect(() => {
+    const savedCategory = localStorage.getItem("commercial_refurb_selectedCategory");
+    if (savedCategory) {
+      setSelectedCategory(savedCategory as "all" | "sunk" | "value");
+    }
+  }, []);
+
+  // Save to localStorage on change
+  useEffect(() => {
+    localStorage.setItem("commercial_refurb_selectedCategory", selectedCategory);
+  }, [selectedCategory]);
+
+  const calculateRoleCost = (role: RoleData) => {
+    if (!role.isActive) return 0;
+    return role.duration * (role.allocation / 100) * role.rate;
+  };
+
+  const totalSupervision = useMemo(() => {
+    const rolesList = roles && roles.length > 0 ? roles : DEFAULT_ROLES;
+    return rolesList.reduce((sum, r) => sum + calculateRoleCost(r), 0);
+  }, [roles]);
+
+  // Line items data merged according to the PDF stages, with design phases matching Option 2
   const lineItems: LineItem[] = useMemo(() => [
     {
-      id: "initial-studies",
-      name: "Initial Studies: Structure Tests & Analysis",
+      id: "phase1",
+      num: "1.1",
+      phase: "Phase.01",
+      name: "Site survey, Assessments, and TDD",
       category: "sunk",
-      amount: 80000,
-      description: "Forensic structural concrete coring, carbonation testing, and reinforcement corrosion analysis to gauge structural load integrity.",
-      impactScore: 1,
-    },
-    {
-      id: "building-survey",
-      name: "Site & Existing Building Survey",
-      category: "sunk",
-      amount: 40000,
-      description: "Laser scanning and dimensional surveys to document existing floor level deflections and structural shifts.",
+      unit: "LS",
+      qty: 1,
+      amount: 300000,
+      description: "Forensic structural concrete testing, laser scanning, building surveys, MEP condition assessments, and drafting structural as-built records.",
       impactScore: 2,
+      duration: "6 Weeks"
     },
     {
-      id: "mep-survey",
-      name: "Existing MEP / Site Survey",
+      id: "phase2",
+      num: "1.2",
+      phase: "Phase.02",
+      name: "Strategic Recommendations and Feasibility Analysis based on assessment findings",
       category: "sunk",
-      amount: 100000,
-      description: "Detailed forensic tracking of aging, embedded mechanical, electrical, and plumbing infrastructure inside concrete shafts.",
-      impactScore: 1,
+      unit: "LS",
+      qty: 1,
+      amount: 0,
+      description: "Options development, technical feasibility analysis, operational business continuity planning, lifecycle cost modeling, and preferred option recommendations.",
+      impactScore: 3,
+      duration: "6 Weeks"
     },
     {
-      id: "as-built",
-      name: "As-Built Drawings",
-      category: "sunk",
-      amount: 80000,
-      description: "Compiling and drafting new structural records since original architectural documents are missing or obsolete.",
-      impactScore: 2,
-    },
-    {
-      id: "concept-design",
-      name: "New Concept Design",
+      id: "phase3a",
+      num: "2.1",
+      phase: "Phase.03 (a)",
+      name: "Concept Design",
       category: "value",
-      amount: 60000,
-      description: "Redesigning interior spatial layouts within the rigid boundaries of the existing column grids.",
+      unit: "LS",
+      qty: 1,
+      amount: Math.round(totalFee * 0.20),
+      description: "Aesthetic visioning boards, spatial layouts, exterior blocks, and regulatory compliance pre-consultations.",
       impactScore: 7,
+      duration: "12 Weeks"
     },
     {
-      id: "schematic-design",
+      id: "phase3b",
+      num: "2.2",
+      phase: "Phase.03 (b)",
       name: "Schematic Design",
       category: "value",
-      amount: 90000,
-      description: "Developing building services and structural integration blueprints based on the new concepts.",
+      unit: "LS",
+      qty: 1,
+      amount: Math.round(totalFee * 0.30),
+      description: "Scaled plans, elevations, preliminary structural systems, MEP layouts, material schedules, and ADCD zoning plans.",
       impactScore: 8,
+      duration: "6 Weeks"
     },
     {
-      id: "detailed-design",
+      id: "phase3c",
+      num: "2.3",
+      phase: "Phase.03 (c)",
       name: "Detailed Design",
       category: "value",
-      amount: 135000,
-      description: "Final tender-ready construction blueprints, detailed connection calculations, and architectural finishes specifications.",
+      unit: "LS",
+      qty: 1,
+      amount: Math.round(totalFee * 0.45),
+      description: "Fully coordinated construction blueprints, structural and MEP calculations, fixtures/equipment schedules, and interior finishing plans.",
       impactScore: 9,
+      duration: "12 Weeks"
     },
     {
-      id: "tender-stage",
-      name: "Tender Stage",
+      id: "phase3d",
+      num: "2.4",
+      phase: "Phase.03 (d)",
+      name: "Tender Documentation and Tender Stage",
       category: "value",
-      amount: 15000,
-      description: "Managing contractor queries, evaluating bids, and preparing detailed Bills of Quantities (BOQs).",
+      unit: "LS",
+      qty: 1,
+      amount: totalFee - Math.round(totalFee * 0.20) - Math.round(totalFee * 0.30) - Math.round(totalFee * 0.45),
+      description: "Bill of quantities, pre-qualification criteria, contractor bidding package compilation, and tender evaluations.",
       impactScore: 5,
-    },
-    {
-      id: "interior-ffe",
-      name: "Interior Package + FF&E",
-      category: "value",
-      amount: 80000,
-      description: "Sourcing and specifying interior loose furniture, fit-outs, fixtures, and surface finishes.",
-      impactScore: 9,
-    },
-  ], []);
+      duration: "6 Weeks"
+    }
+  ], [totalFee]);
 
   // Mathematical validations
   const calculations = useMemo(() => {
@@ -117,11 +197,11 @@ export default function RefurbishmentFees() {
       .filter((item) => item.category === "value")
       .reduce((acc, curr) => acc + curr.amount, 0);
 
-    const statedTotal = 680000;
+    const statedTotal = 300000 + totalFee;
     const isVerified = total === statedTotal;
 
-    const sunkPercentage = (sunkAmount / total) * 100; // ~44.11%
-    const valuePercentage = (valueAmount / total) * 100; // ~55.88%
+    const sunkPercentage = (sunkAmount / total) * 100;
+    const valuePercentage = (valueAmount / total) * 100;
 
     return {
       total,
@@ -131,7 +211,7 @@ export default function RefurbishmentFees() {
       sunkPercentage: Math.round(sunkPercentage),
       valuePercentage: Math.round(valuePercentage),
     };
-  }, [lineItems]);
+  }, [lineItems, totalFee]);
 
   // Filtered items based on interactive selection
   const filteredItems = useMemo(() => {
@@ -195,7 +275,7 @@ export default function RefurbishmentFees() {
               <div>
                 <p className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Stated Investment Total</p>
                 <h3 className="text-3xl font-extrabold text-white mt-2 tracking-tight">
-                  {formatCurrency(680000)}
+                  {formatCurrency(300000 + totalFee)}
                 </h3>
               </div>
               <div className="p-2 bg-slate-800 rounded-lg text-teal-400">
@@ -326,12 +406,12 @@ export default function RefurbishmentFees() {
                     strokeWidth="10" 
                     strokeDasharray="251.3"
                     initial={{ strokeDashoffset: 251.3 }}
-                    animate={{ strokeDashoffset: 251.3 - (251.3 * 44.11) / 100 }}
+                    animate={{ strokeDashoffset: 251.3 - (251.3 * calculations.sunkPercentage) / 100 }}
                     transition={{ duration: 1.2, ease: "easeOut" }}
                     onClick={() => setSelectedCategory("sunk")}
                     whileHover={{ strokeWidth: 12 }}
                   />
-                  {/* Value Add design circle arc (55.88%) */}
+                  {/* Value Add design circle arc */}
                   {/* start offset is Sunk portion offset */}
                   <motion.circle 
                     cx="55" 
@@ -341,8 +421,8 @@ export default function RefurbishmentFees() {
                     strokeWidth="10" 
                     strokeDasharray="251.3"
                     initial={{ strokeDashoffset: 251.3 }}
-                    animate={{ strokeDashoffset: 251.3 - (251.3 * 55.89) / 100 }}
-                    style={{ rotate: "158.8deg", transformOrigin: "55px 50px" }}
+                    animate={{ strokeDashoffset: 251.3 - (251.3 * calculations.valuePercentage) / 100 }}
+                    style={{ rotate: `${(360 * calculations.sunkPercentage) / 100}deg`, transformOrigin: "55px 50px" }}
                     transition={{ duration: 1.2, delay: 0.2, ease: "easeOut" }}
                     onClick={() => setSelectedCategory("value")}
                     whileHover={{ strokeWidth: 12 }}
@@ -351,7 +431,7 @@ export default function RefurbishmentFees() {
 
                 {/* Donut Center Info */}
                 <div className="absolute text-center">
-                  <span className="text-2xl font-black text-white">AED 680,000</span>
+                  <span className="text-2xl font-black text-white">AED {(300000 + totalFee).toLocaleString()}</span>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">Total Allocation</p>
                 </div>
               </div>
@@ -408,7 +488,6 @@ export default function RefurbishmentFees() {
               )}
             </div>
           </div>
-
           {/* Interactive Line Items List / Table */}
           <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden">
             
@@ -416,7 +495,7 @@ export default function RefurbishmentFees() {
             <div className="p-5 border-b border-slate-800 bg-slate-900/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-white tracking-tight">Line-Item Fee Breakdown</h3>
-                <p className="text-xs text-slate-400">9 Core Services of Refurbishment Option 1.</p>
+                <p className="text-xs text-slate-400">6 Core Phases of Refurbishment Option 1.</p>
               </div>
               
               {/* Category Filter Buttons */}
@@ -429,7 +508,7 @@ export default function RefurbishmentFees() {
                       : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  All (9)
+                  All (6)
                 </button>
                 <button
                   onClick={() => setSelectedCategory("sunk")}
@@ -439,7 +518,7 @@ export default function RefurbishmentFees() {
                       : "text-slate-400 hover:text-rose-400"
                   }`}
                 >
-                  Sunk (4)
+                  Sunk (2)
                 </button>
                 <button
                   onClick={() => setSelectedCategory("value")}
@@ -449,7 +528,7 @@ export default function RefurbishmentFees() {
                       : "text-slate-400 hover:text-teal-400"
                   }`}
                 >
-                  Value-Add (5)
+                  Value-Add (4)
                 </button>
               </div>
             </div>
@@ -459,99 +538,175 @@ export default function RefurbishmentFees() {
             <div className="hidden md:block overflow-x-auto flex-1">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-850 text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-slate-900/10">
-                    <th className="py-3 px-5">Consultancy Line Item</th>
-                    <th className="py-3 px-4">Classification</th>
-                    <th className="py-3 px-4 text-right">Fee amount</th>
-                    <th className="py-3 px-4 text-center">Value Impact</th>
+                  <tr className="border-b border-slate-800 text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-slate-900/40">
+                    <th className="py-3 px-4 w-[5%] text-center">#</th>
+                    <th className="py-3 px-4 w-[12%]">Phase</th>
+                    <th className="py-3 px-4 w-[40%]">Stage Description</th>
+                    <th className="py-3 px-4 w-[6%] text-center">Unit</th>
+                    <th className="py-3 px-4 w-[6%] text-center">Qty</th>
+                    <th className="py-3 px-4 w-[13%] text-right">Unit Rate (AED)</th>
+                    <th className="py-3 px-4 w-[13%] text-right">Total Fee (AED)</th>
+                    <th className="py-3 px-4 w-[13%] text-center">Duration</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-850">
-                  <AnimatePresence mode="popLayout">
-                    {filteredItems.map((item) => {
-                      const isHovered = hoveredItemId === item.id;
-                      const itemPercentage = (item.amount / 680000) * 100;
-                      
-                      return (
-                        <motion.tr
-                          key={item.id}
-                          layoutId={item.id}
-                          initial={{ opacity: 0, y: 4 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, scale: 0.95 }}
-                          transition={{ duration: 0.2 }}
-                          onMouseEnter={() => setHoveredItemId(item.id)}
-                          onMouseLeave={() => setHoveredItemId(null)}
-                          className={`group cursor-pointer transition-colors ${
-                            isHovered 
-                              ? "bg-slate-850/60" 
-                              : item.category === "sunk" 
-                                ? "hover:bg-rose-950/10" 
-                                : "hover:bg-teal-950/10"
-                          }`}
-                        >
-                          {/* Name & Subtext */}
-                          <td className="py-3.5 px-5">
-                            <div className="font-semibold text-white text-sm group-hover:text-teal-300 transition-colors">
-                              {item.name}
-                            </div>
-                            <div className="text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[28rem]">
-                              {item.description}
-                            </div>
-                          </td>
+                <tbody className="divide-y divide-slate-850/40 text-sm">
+                  
+                  {/* Section 1: Base Scope of Work */}
+                  <tr className="bg-slate-900/20">
+                    <td colSpan={8} className="py-2 px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-850/40">
+                      1. Base Scope Of Work
+                    </td>
+                  </tr>
+                  
+                  {/* Phase 1 & 2 */}
+                  {lineItems.slice(0, 2).map((item) => {
+                    const isHovered = hoveredItemId === item.id;
+                    const isFilteredOut = selectedCategory !== "all" && item.category !== selectedCategory;
+                    return (
+                      <tr
+                        key={item.id}
+                        onMouseEnter={() => setHoveredItemId(item.id)}
+                        onMouseLeave={() => setHoveredItemId(null)}
+                        className={`transition-all duration-200 border-b border-slate-850/20 ${
+                          isFilteredOut ? "opacity-30" : "opacity-100"
+                        } ${
+                          isHovered 
+                            ? "bg-slate-850/60 text-white" 
+                            : "hover:bg-slate-900/30"
+                        }`}
+                      >
+                        <td className="py-3 px-4 text-center font-semibold text-slate-500 font-mono">{item.num}</td>
+                        <td className="py-3 px-4 font-semibold text-white">{item.phase}</td>
+                        <td className="py-3 px-4">
+                          <span className="text-slate-200 font-medium group-hover:text-teal-300 transition-colors">{item.name}</span>
+                          <span className="block text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[32rem]">
+                            {item.description}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono text-slate-400">{item.unit}</td>
+                        <td className="py-3 px-4 text-center font-mono text-slate-400">{item.qty}</td>
+                        <td className="py-3 px-4 text-right font-mono text-slate-300">{item.amount.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-right font-mono font-bold text-teal-400">{item.amount.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-center text-slate-300 font-medium">{item.duration}</td>
+                      </tr>
+                    );
+                  })}
+                  
+                  {/* Base Scope Subtotal */}
+                  <tr className="bg-slate-900/10 font-bold border-b border-slate-800">
+                    <td className="py-2.5 px-4 text-center text-slate-500 font-mono">-</td>
+                    <td className="py-2.5 px-4 text-slate-400">-</td>
+                    <td className="py-2.5 px-4 text-slate-300 text-xs uppercase tracking-wider">Subtotal Base Scope</td>
+                    <td className="py-2.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-right text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-right font-mono text-white">{calculations.sunkAmount.toLocaleString()}</td>
+                    <td className="py-2.5 px-4 text-center text-slate-300">12 Weeks</td>
+                  </tr>
 
-                          {/* Classification Badge */}
-                          <td className="py-3.5 px-4 whitespace-nowrap">
-                            {item.category === "sunk" ? (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 uppercase tracking-wider">
-                                <AlertTriangle className="h-3 w-3" />
-                                Diagnostic Sunk
-                              </span>
-                            ) : (
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 uppercase tracking-wider">
-                                <TrendingUp className="h-3 w-3" />
-                                Value-Add Design
-                              </span>
-                            )}
-                          </td>
+                  {/* Section 2: Optional Scope of Work */}
+                  <tr className="bg-slate-900/20">
+                    <td colSpan={8} className="py-2 px-4 text-[10px] font-bold uppercase tracking-widest text-slate-400 border-b border-slate-850/40">
+                      2. Optional Scope Of Work
+                    </td>
+                  </tr>
 
-                          {/* Amount */}
-                          <td className="py-3.5 px-4 text-right font-mono text-sm whitespace-nowrap">
-                            <span className={`font-bold ${item.category === "sunk" ? "text-slate-300" : "text-teal-300"}`}>
-                              {formatCurrency(item.amount)}
-                            </span>
-                            <span className="block text-[10px] text-slate-500">
-                              {itemPercentage.toFixed(1)}% weight
-                            </span>
-                          </td>
+                  {/* Phase 3 a-d */}
+                  {lineItems.slice(2, 6).map((item) => {
+                    const isHovered = hoveredItemId === item.id;
+                    const isFilteredOut = selectedCategory !== "all" && item.category !== selectedCategory;
+                    return (
+                      <tr
+                        key={item.id}
+                        onMouseEnter={() => setHoveredItemId(item.id)}
+                        onMouseLeave={() => setHoveredItemId(null)}
+                        className={`transition-all duration-200 border-b border-slate-850/20 ${
+                          isFilteredOut ? "opacity-30" : "opacity-100"
+                        } ${
+                          isHovered 
+                            ? "bg-slate-850/60 text-white" 
+                            : "hover:bg-slate-900/30"
+                        }`}
+                      >
+                        <td className="py-3 px-4 text-center font-semibold text-slate-500 font-mono">{item.num}</td>
+                        <td className="py-3 px-4 font-semibold text-white">{item.phase}</td>
+                        <td className="py-3 px-4">
+                          <span className="text-slate-200 font-medium group-hover:text-teal-300 transition-colors">{item.name}</span>
+                          <span className="block text-xs text-slate-400 mt-0.5 line-clamp-1 max-w-[32rem]">
+                            {item.description}
+                          </span>
+                        </td>
+                        <td className="py-3 px-4 text-center font-mono text-slate-400">{item.unit}</td>
+                        <td className="py-3 px-4 text-center font-mono text-slate-400">{item.qty}</td>
+                        <td className="py-3 px-4 text-right font-mono text-slate-300">{item.amount.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-right font-mono font-bold text-teal-400">{item.amount.toLocaleString()}</td>
+                        <td className="py-3 px-4 text-center text-slate-300 font-medium">{item.duration}</td>
+                      </tr>
+                    );
+                  })}
 
-                          {/* Impact Score Visual Rating */}
-                          <td className="py-3.5 px-4 text-center whitespace-nowrap">
-                            <div className="flex items-center justify-center gap-1">
-                              {[...Array(5)].map((_, i) => {
-                                const scaledImpact = Math.round(item.impactScore / 2);
-                                return (
-                                  <span
-                                    key={i}
-                                    className={`h-1.5 w-1.5 rounded-full ${
-                                      i < scaledImpact
-                                        ? item.category === "sunk"
-                                          ? "bg-rose-500"
-                                          : "bg-teal-400"
-                                        : "bg-slate-750"
-                                    }`}
-                                  />
-                                );
-                              })}
-                              <span className="text-[10px] text-slate-400 ml-1.5">
-                                {item.impactScore}/10
-                              </span>
-                            </div>
-                          </td>
-                        </motion.tr>
-                      );
-                    })}
-                  </AnimatePresence>
+                  {/* Optional Scope Subtotal */}
+                  <tr className="bg-slate-900/10 font-bold border-b border-slate-800">
+                    <td className="py-2.5 px-4 text-center text-slate-500 font-mono">-</td>
+                    <td className="py-2.5 px-4 text-slate-400">-</td>
+                    <td className="py-2.5 px-4 text-slate-300 text-xs uppercase tracking-wider">Subtotal Optional Scope</td>
+                    <td className="py-2.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-right text-slate-500">-</td>
+                    <td className="py-2.5 px-4 text-right font-mono text-white">{calculations.valueAmount.toLocaleString()}</td>
+                    <td className="py-2.5 px-4 text-center text-slate-300">36 Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
+                  </tr>
+
+                  {/* Grand Total Base + Optional */}
+                  <tr className="bg-slate-900/20 font-bold border-b-2 border-slate-700">
+                    <td className="py-3 px-4 text-center text-slate-500 font-mono">-</td>
+                    <td className="py-3 px-4 text-slate-400">-</td>
+                    <td className="py-3 px-4 text-white text-xs uppercase tracking-widest text-teal-300">Grand Total (Base + Optional) Scope</td>
+                    <td className="py-3 px-4 text-center text-slate-500">-</td>
+                    <td className="py-3 px-4 text-center text-slate-500">-</td>
+                    <td className="py-3 px-4 text-right text-slate-500">-</td>
+                    <td className="py-3 px-4 text-right font-mono text-sm text-teal-400 decoration-double underline decoration-teal-500/40">{calculations.total.toLocaleString()}</td>
+                    <td className="py-3 px-4 text-center text-slate-300">48 Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
+                  </tr>
+
+                  {/* Price in Words Callout Row */}
+                  <tr className="bg-slate-950/40 text-[10px]">
+                    <td colSpan={8} className="py-2 px-5 text-slate-400 italic">
+                      <strong className="text-white not-italic uppercase tracking-wider mr-2">Total Price in Words (AED):</strong>
+                      {convertNumberToWords(calculations.total)} UAE Dirhams Only (Excluding VAT and Construction Site Supervision)
+                    </td>
+                  </tr>
+
+                  {/* Phase 04 Construction Site Supervision */}
+                  <tr className="border-b border-slate-800 hover:bg-slate-900/30 transition-colors">
+                    <td className="py-3 px-4 text-center font-semibold text-slate-500 font-mono">2.5</td>
+                    <td className="py-3 px-4 font-semibold text-white">Phase.04</td>
+                    <td className="py-3 px-4">
+                      <span className="text-slate-200 font-medium">Construction Site Supervision</span>
+                      <span className="block text-xs text-slate-400 mt-0.5">
+                        Carried forward from SS Breakdown tab (14 active/proposed engineering roles)
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-center font-mono text-slate-400">-</td>
+                    <td className="py-3 px-4 text-center font-mono text-slate-400">-</td>
+                    <td className="py-3 px-4 text-right font-mono text-slate-400">-</td>
+                    <td className="py-3 px-4 text-right font-mono font-bold text-teal-400">{totalSupervision.toLocaleString()}</td>
+                    <td className="py-3 px-4 text-center text-slate-300 font-medium">18 Months <span className="text-[10px] text-slate-500">(Indicative)</span></td>
+                  </tr>
+
+                  {/* Grand Total Base + Optional + SS */}
+                  <tr className="bg-slate-900/30 font-black border-b border-slate-700">
+                    <td className="py-3.5 px-4 text-center text-slate-500 font-mono">-</td>
+                    <td className="py-3.5 px-4 text-slate-400">-</td>
+                    <td className="py-3.5 px-4 text-teal-300 text-xs uppercase tracking-widest">Grand Total (Base + Optional + SS) Scope</td>
+                    <td className="py-3.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-3.5 px-4 text-center text-slate-500">-</td>
+                    <td className="py-3.5 px-4 text-right text-slate-500">-</td>
+                    <td className="py-3.5 px-4 text-right font-mono text-base text-emerald-450 decoration-double underline decoration-emerald-500/40">
+                      {(calculations.total + totalSupervision).toLocaleString()}
+                    </td>
+                    <td className="py-3.5 px-4 text-center text-slate-300">48 Weeks + 18 Months</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -561,7 +716,7 @@ export default function RefurbishmentFees() {
               <AnimatePresence mode="popLayout">
                 {filteredItems.map((item) => {
                   const isHovered = hoveredItemId === item.id;
-                  const itemPercentage = (item.amount / 680000) * 100;
+                  const itemPercentage = (item.amount / calculations.total) * 100;
 
                   return (
                     <motion.div
@@ -569,7 +724,7 @@ export default function RefurbishmentFees() {
                       onClick={() => setHoveredItemId(hoveredItemId === item.id ? null : item.id)}
                       className={`p-4 rounded-xl border transition-all ${
                         isHovered
-                          ? "bg-slate-850/80 border-slate-700 text-white"
+                          ? "bg-slate-850/80 border-slate-700 text-white animate-pulse"
                           : item.category === "sunk"
                           ? "bg-rose-950/5 border-rose-950/30 border text-slate-300"
                           : "bg-teal-950/5 border-teal-950/30 border text-slate-300"
@@ -577,9 +732,12 @@ export default function RefurbishmentFees() {
                     >
                       {/* Title & Badge */}
                       <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
-                        <span className="font-semibold text-xs text-white leading-snug">
-                          {item.name}
-                        </span>
+                        <div>
+                          <div className="text-[10px] text-slate-500 font-semibold font-mono">{item.num} | {item.phase}</div>
+                          <span className="font-semibold text-xs text-white leading-snug">
+                            {item.name}
+                          </span>
+                        </div>
                         <span className="shrink-0">
                           {item.category === "sunk" ? (
                             <span className="text-[8px] font-bold px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 tracking-wider">
@@ -596,8 +754,8 @@ export default function RefurbishmentFees() {
                       {/* Cost details */}
                       <div className="flex justify-between items-center text-xs">
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-slate-500">Allocation Weight</span>
-                          <span className="font-mono text-slate-300 font-semibold">{itemPercentage.toFixed(1)}%</span>
+                          <span className="text-[10px] text-slate-500">Duration / Qty</span>
+                          <span className="text-slate-300 font-medium">{item.duration} ({item.unit} x {item.qty})</span>
                         </div>
                         <div className="flex flex-col items-end">
                           <span className="text-[10px] text-slate-500">Fee Amount</span>
@@ -606,32 +764,61 @@ export default function RefurbishmentFees() {
                           </span>
                         </div>
                       </div>
-
-                      {/* Impact rating bar */}
-                      <div className="mt-3 flex items-center justify-between text-[10px] text-slate-400">
-                        <span>Value Impact Rating</span>
-                        <div className="flex items-center gap-1">
-                          {[...Array(5)].map((_, i) => {
-                            const scaledImpact = Math.round(item.impactScore / 2);
-                            return (
-                              <span
-                                key={i}
-                                className={`h-1 w-1 rounded-full ${
-                                  i < scaledImpact
-                                    ? item.category === "sunk"
-                                      ? "bg-rose-500"
-                                      : "bg-teal-400"
-                                    : "bg-slate-750"
-                                }`}
-                              />
-                            );
-                          })}
-                          <span className="ml-1 font-semibold">{item.impactScore}/10</span>
-                        </div>
-                      </div>
                     </motion.div>
                   );
                 })}
+
+                {/* Mobile Supervision Card */}
+                <div className="p-4 rounded-xl border bg-slate-900/40 border-slate-800 text-slate-300">
+                  <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
+                    <div>
+                      <div className="text-[10px] text-slate-500 font-semibold font-mono">2.5 | Phase.04</div>
+                      <span className="font-semibold text-xs text-white leading-snug">
+                        Construction Site Supervision
+                      </span>
+                    </div>
+                    <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 tracking-wider">
+                      Supervision
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-500">Duration</span>
+                      <span className="text-slate-300 font-medium">18 Months (Indicative)</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[10px] text-slate-500">Fee Amount</span>
+                      <span className="font-mono font-bold text-teal-450">
+                        {formatCurrency(totalSupervision)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile Grand Total Card */}
+                <div className="p-4 rounded-xl border bg-slate-900/60 border-teal-950/40 text-slate-300">
+                  <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
+                    <div>
+                      <span className="font-bold text-xs text-white uppercase tracking-wider">
+                        Grand Total (Base + Optional + SS)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs">
+                    <div className="flex flex-col">
+                      <span className="text-[10px] text-slate-500">Duration Sum</span>
+                      <span className="text-slate-300 font-medium">48 Weeks + 18 Mos</span>
+                    </div>
+                    <div className="flex flex-col items-end">
+                      <span className="text-[10px] text-slate-500">Total Project Cost</span>
+                      <span className="font-mono font-black text-emerald-400 text-sm">
+                        {formatCurrency(calculations.total + totalSupervision)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </AnimatePresence>
             </div>
 
@@ -653,7 +840,7 @@ export default function RefurbishmentFees() {
                     </div>
                     <div className="space-y-1 flex-1">
                       <div className="flex justify-between items-center">
-                        <span className="font-bold text-white">{activeHoveredItem.name}</span>
+                        <span className="font-bold text-white">{activeHoveredItem.phase}: {activeHoveredItem.name}</span>
                         <span className={`font-semibold ${
                           activeHoveredItem.category === "sunk" ? "text-rose-400" : "text-teal-400"
                         }`}>

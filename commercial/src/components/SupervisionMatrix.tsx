@@ -38,7 +38,7 @@ export interface RoleData {
   isActive: boolean; // For optional toggle
 }
 
-const DEFAULT_ROLES: RoleData[] = [
+export const DEFAULT_ROLES: RoleData[] = [
   {
     id: "pm",
     name: "Project Manager (Engr. Galal Sakran)",
@@ -250,9 +250,14 @@ const PRESET_SCENARIOS: { [key: string]: Scenario } = {
   }
 };
 
-export default function SupervisionMatrix() {
-  const [roles, setRoles] = useState<RoleData[]>(DEFAULT_ROLES);
-  const [activeScenario, setActiveScenario] = useState<string>("baseline");
+interface SupervisionMatrixProps {
+  roles: RoleData[];
+  setRoles: React.Dispatch<React.SetStateAction<RoleData[]>>;
+  activeScenario: string;
+  setActiveScenario: (scenario: string) => void;
+}
+
+export default function SupervisionMatrix({ roles, setRoles, activeScenario, setActiveScenario }: SupervisionMatrixProps) {
   const [showNotification, setShowNotification] = useState<string | null>(null);
   const [hoveredTooltip, setHoveredTooltip] = useState<string | null>(null);
 

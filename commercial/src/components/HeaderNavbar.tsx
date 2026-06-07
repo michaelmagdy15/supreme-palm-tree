@@ -257,7 +257,8 @@ export default function HeaderNavbar({
                 <span className="text-[9px] text-slate-500">Last updated: Today</span>
               </div>
               <button 
-                className="p-1.5 hover:bg-slate-800 hover:text-cyan-400 rounded text-slate-400 transition-colors"
+                onClick={() => window.print()}
+                className="p-1.5 hover:bg-slate-800 hover:text-cyan-400 rounded text-slate-400 transition-colors cursor-pointer"
                 title="Export Feasibility PDF"
               >
                 <Download className="w-3.5 h-3.5" />
@@ -351,7 +352,10 @@ export default function HeaderNavbar({
                     <span>Study: {projectName}</span>
                     <span className="text-cyan-400">v2.4</span>
                   </div>
-                  <button className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold py-2 rounded transition-all shadow-md shadow-cyan-500/10">
+                  <button 
+                    onClick={() => window.print()}
+                    className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-bold py-2 rounded transition-all shadow-md shadow-cyan-500/10 cursor-pointer"
+                  >
                     <Download className="w-3.5 h-3.5" />
                     Download PDF Report
                   </button>
