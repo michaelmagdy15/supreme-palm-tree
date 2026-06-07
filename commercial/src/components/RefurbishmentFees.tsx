@@ -134,6 +134,43 @@ export default function RefurbishmentFees({
   const [selectedCategory, setSelectedCategory] = useState<"all" | "sunk" | "value">("all");
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
 
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
+
+  const triggerNotification = (text: string) => {
+    setNotificationText(text);
+    setShowNotification(true);
+  };
+
+  useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => setShowNotification(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  const copyCSVToClipboard = () => {
+    const headers = ["#", "Phase", "Stage Description", "Unit", "Qty", "Unit Rate (AED)", "Total Fee (AED)", "Duration"];
+    const rowsCSV = lineItems.map((item) => [
+      item.num,
+      item.phase,
+      item.name,
+      item.unit,
+      item.qty,
+      item.amount,
+      item.amount,
+      item.duration
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rowsCSV.map((row) => row.map((val) => `"${val}"`).join(","))
+    ].join("\n");
+
+    navigator.clipboard.writeText(csvContent);
+    triggerNotification("Copied refurbishment data as CSV to clipboard!");
+  };
+
   const [phase1Input, setPhase1Input] = useState(phase1Fee.toLocaleString("en-US"));
   const [phase2Input, setPhase2Input] = useState(phase2Fee.toLocaleString("en-US"));
 
@@ -384,6 +421,21 @@ export default function RefurbishmentFees({
 
   return (
     <div className="w-full w-full max-w-full overflow-x-hidden bg-[#070b13] text-slate-100 p-4 sm:p-8 font-sans antialiased selection:bg-teal-500/30 selection:text-teal-200">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-[#0B1528] border border-teal-500/30 text-teal-300 px-5 py-3.5 rounded-lg shadow-xl shadow-black/40 backdrop-blur-md"
+          >
+            <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+            <span className="text-xs font-semibold tracking-wide">{notificationText}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="max-w-7xl mx-auto space-y-8">
         
         {/* TOP BAR / NAVIGATION BREADCRUMB */}
@@ -726,45 +778,56 @@ export default function RefurbishmentFees({
           </div>
           {/* Interactive Line Items List / Table */}
           <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden">
-            
-            {/* Table Header Controls */}
-            <div className="p-5 border-b border-slate-800 bg-slate-900/20 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                        {/* Table Header Controls */}
+            <div className="p-5 border-b border-slate-800 bg-slate-900/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>
                 <h3 className="text-base font-bold text-white tracking-tight">Line-Item Fee Breakdown</h3>
                 <p className="text-xs text-slate-400">6 Core Phases of Refurbishment Option 1.</p>
               </div>
               
-              {/* Category Filter Buttons */}
-              <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 w-fit">
+              <div className="flex flex-wrap items-center gap-3">
+                {/* Category Filter Buttons */}
+                <div className="flex bg-slate-950 p-1 rounded-lg border border-slate-800 w-fit">
+                  <button
+                    onClick={() => setSelectedCategory("all")}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      selectedCategory === "all" 
+                        ? "bg-slate-850 text-white shadow-sm border border-slate-700/50" 
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    All (6)
+                  </button>
+                  <button
+                    onClick={() => setSelectedCategory("sunk")}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      selectedCategory === "sunk" 
+                        ? "bg-rose-955/40 text-rose-400 border border-rose-900/50" 
+                        : "text-slate-400 hover:text-rose-400"
+                    }`}
+                  >
+                    Sunk (2)
+                  </button>
+                  <button
+                    onClick={() => setSelectedCategory("value")}
+                    className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
+                      selectedCategory === "value" 
+                        ? "bg-teal-955/40 text-teal-400 border border-teal-900/50" 
+                        : "text-slate-400 hover:text-teal-400"
+                    }`}
+                  >
+                    Value-Add (4)
+                  </button>
+                </div>
+
+                {/* Export CSV Button */}
                 <button
-                  onClick={() => setSelectedCategory("all")}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                    selectedCategory === "all" 
-                      ? "bg-slate-850 text-white shadow-sm border border-slate-700/50" 
-                      : "text-slate-400 hover:text-slate-200"
-                  }`}
+                  onClick={copyCSVToClipboard}
+                  className="bg-[#0B1528] hover:bg-slate-800 text-slate-300 border border-slate-800 text-xs px-3.5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                  title="Copy refurbishment data to clipboard as CSV"
                 >
-                  All (6)
-                </button>
-                <button
-                  onClick={() => setSelectedCategory("sunk")}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                    selectedCategory === "sunk" 
-                      ? "bg-rose-950/40 text-rose-400 border border-rose-900/50" 
-                      : "text-slate-400 hover:text-rose-400"
-                  }`}
-                >
-                  Sunk (2)
-                </button>
-                <button
-                  onClick={() => setSelectedCategory("value")}
-                  className={`px-3 py-1 text-xs font-semibold rounded-md transition-colors ${
-                    selectedCategory === "value" 
-                      ? "bg-teal-950/40 text-teal-400 border border-teal-900/50" 
-                      : "text-slate-400 hover:text-teal-400"
-                  }`}
-                >
-                  Value-Add (4)
+                  <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Export CSV</span>
                 </button>
               </div>
             </div>
