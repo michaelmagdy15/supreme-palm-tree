@@ -742,6 +742,14 @@ export default function RefurbishmentFees() {
 
         </div>
 
+        {/* Footnote for Terms and Conditions */}
+        <div className="mt-8 pt-4 border-t border-slate-800/80 text-xs text-slate-500 flex items-center gap-2">
+          <Info className="h-4 w-4 text-slate-550 shrink-0" />
+          <span>
+            Payment should be done within 30 days of the submission of deliverables, and all payments are excluded from VAT.
+          </span>
+        </div>
+
       </div>
     </div>
   );

@@ -93,14 +93,14 @@ const phases: Phase[] = [
 
 const PRESETS = [
   { label: "Boutique Retail / Fit-out", value: 150000 },
-  { label: "Standard Commercial", value: 290000 },
+  { label: "Standard Commercial", value: 380000 },
   { label: "Premium Development", value: 550000 },
   { label: "Flagship Corporate Complex", value: 1200000 }
 ];
 
 export default function DesignFees() {
-  const [totalFee, setTotalFee] = useState<number>(290000);
-  const [feeInput, setFeeInput] = useState<string>("290,000");
+  const [totalFee, setTotalFee] = useState<number>(380000);
+  const [feeInput, setFeeInput] = useState<string>("380,000");
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
 
   const formatAED = (value: number) => {
@@ -215,7 +215,7 @@ export default function DesignFees() {
                   value={feeInput}
                   onChange={handleTextChange}
                   onBlur={handleBlur}
-                  placeholder="e.g. 290,000"
+                  placeholder="e.g. 380,000"
                 />
               </div>
             </div>
@@ -446,7 +446,7 @@ export default function DesignFees() {
           <div className="flex items-center gap-2">
             <Info className="h-4 w-4 text-teal-500/80 shrink-0" />
             <span className="leading-relaxed">
-              Standard contract payment milestones typically correspond to deliverables submitted at completion of each stage.
+              Payment should be done within 30 days of the submission of each stage's deliverables, and all payments are excluded from VAT.
             </span>
           </div>
           <div className="font-semibold text-slate-400 hover:text-teal-400 cursor-pointer select-none transition-colors">

@@ -44,9 +44,9 @@ export default function SummaryCards() {
   // Option 2 Design Cost states
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const designPhases = [
-    { name: "Concept Design", percent: 20, cost: 58000 },
-    { name: "Schematic Design", percent: 30, cost: 87000 },
-    { name: "Detailed Design", percent: 50, cost: 145000 },
+    { name: "Concept Design", percent: 20, cost: 76000 },
+    { name: "Schematic Design", percent: 30, cost: 114000 },
+    { name: "Detailed Design", percent: 50, cost: 190000 },
   ];
 
   // Option 1 Refurbishment Cost states
@@ -54,8 +54,8 @@ export default function SummaryCards() {
 
   // Site Supervision states
   const [includeOptional, setIncludeOptional] = useState(false);
-  const coreSupervision = 1837000;
-  const optionalSupervision = 252000;
+  const coreSupervision = 1294200;
+  const optionalSupervision = 45000;
   const totalSupervision = includeOptional
     ? coreSupervision + optionalSupervision
     : coreSupervision;
@@ -83,7 +83,7 @@ export default function SummaryCards() {
                   Option 2 Design Cost
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  AED 290,000
+                  AED 380,000
                 </h3>
               </div>
               <div className="p-2.5 bg-cyan-50 dark:bg-cyan-950/40 rounded-xl text-cyan-600 dark:text-cyan-400">
@@ -294,7 +294,7 @@ export default function SummaryCards() {
               <div className="flex justify-between items-center">
                 <span className="text-slate-500">Core Services:</span>
                 <span className="font-semibold text-slate-700 dark:text-slate-300">
-                  AED 1,837,000
+                  AED 1,294,200
                 </span>
               </div>
               <div
@@ -308,7 +308,7 @@ export default function SummaryCards() {
                   Optional Services:
                   {includeOptional && <CheckCircle2 className="w-3.5 h-3.5" />}
                 </span>
-                <span className="font-semibold">AED 252,000</span>
+                <span className="font-semibold">AED 45,000</span>
               </div>
             </div>
           </div>

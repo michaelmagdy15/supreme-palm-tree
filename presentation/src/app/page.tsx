@@ -621,7 +621,14 @@ export default function Presentation() {
                 <h4 className="text-2xl font-bold text-slate-900 mb-6 text-teal-700">5. COMMERCIAL PROPOSAL & FEE RESTRUCTURING</h4>
                 <p className="mb-4">Dar Al Khalij emphasizes that quoting a standard consultancy fee for Option 1 is inherently flawed, as the required forensic assessment phase alone will consume a disproportionate percentage of the budget before design even begins.</p>
                 <p className="font-semibold text-slate-900 mt-6 mb-3">Recommendation on Fees:</p>
-                <p>We propose structuring the commercial offer to heavily incentivize Option 2. The fees for designing a new build (Option 2) will be significantly more competitive and predictable than the open-ended, high-risk consultancy required to reverse-engineer Option 1.</p>
+                <p className="mb-6">We propose structuring the commercial offer to heavily incentivize Option 2. The fees for designing a new build (Option 2) will be significantly more competitive and predictable than the open-ended, high-risk consultancy required to reverse-engineer Option 1.</p>
+                <div className="p-6 bg-teal-50 border-l-4 border-teal-500 rounded-r-2xl text-slate-700 text-sm shadow-sm">
+                  <h5 className="font-bold text-teal-900 mb-2">Commercial Terms &amp; Conditions</h5>
+                  <ul className="list-disc pl-5 space-y-1.5 text-xs text-slate-650">
+                    <li><strong>Payment Terms:</strong> Payment should be done within 30 days of the submission of stage deliverables.</li>
+                    <li><strong>Tax Exclusion:</strong> All proposed payments and fees are strictly excluded from VAT.</li>
+                  </ul>
+                </div>
               </div>
 
               <div>

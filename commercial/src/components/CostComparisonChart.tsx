@@ -21,15 +21,15 @@ export default function CostComparisonChart() {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
   // Financial Figures (AED)
-  const supervisionCost = 1837000;
-  const sustainabilityCost = 252000;
+  const supervisionCost = 1294200;
+  const sustainabilityCost = 45000;
   const p1ForensicDesign = 680000;
-  const p2CleanDesign = 290000;
+  const p2CleanDesign = 380000;
 
   // Calculations
   const p1Total = p1ForensicDesign + supervisionCost + (includeSustainability ? sustainabilityCost : 0);
   const p2Total = p2CleanDesign + supervisionCost + (includeSustainability ? sustainabilityCost : 0);
-  const savings = p1Total - p2Total; // AED 390,000
+  const savings = p1Total - p2Total; // AED 300,000
 
   // Format helper
   const formatAED = (value: number) => {
@@ -60,7 +60,7 @@ export default function CostComparisonChart() {
           <Leaf className={`h-4 w-4 transition-colors ${includeSustainability ? 'text-cyan-400' : 'text-slate-500'}`} />
           <div className="flex flex-col">
             <span className="text-xs font-semibold text-slate-200 leading-none">Sustainability Option</span>
-            <span className="text-[10px] text-slate-400 mt-0.5">+AED 252,000 PQP Supervision</span>
+            <span className="text-[10px] text-slate-400 mt-0.5">+AED 45,000 PQP Supervision</span>
           </div>
           <button
             onClick={() => setIncludeSustainability(!includeSustainability)}
@@ -183,7 +183,7 @@ export default function CostComparisonChart() {
           </div>
           <div className="mt-4 pt-4 border-t border-emerald-900 flex flex-col gap-2">
             <div className="text-xs text-emerald-200 leading-relaxed">
-              New Build eliminates structural risk premiums and forensic engineering cost overlays, returning <span className="font-bold text-white">AED 390,000</span> straight to client reserves.
+              New Build eliminates structural risk premiums and forensic engineering cost overlays, returning <span className="font-bold text-white">AED 300,000</span> straight to client reserves.
             </div>
           </div>
         </div>
@@ -373,17 +373,17 @@ export default function CostComparisonChart() {
             )}
             {hoveredSegment === 'p2-design' && (
               <p>
-                <strong className="text-cyan-600 font-semibold">Clean Slate Value (AED 290,000):</strong> By starting with a new build, structural engineering risks drop significantly. Architectural fees are fully optimized around direct asset utility without structural remediation constraints.
+                <strong className="text-cyan-600 font-semibold">Clean Slate Value (AED 380,000):</strong> By starting with a new build, structural engineering risks drop significantly. Architectural fees are fully optimized around direct asset utility without structural remediation constraints.
               </p>
             )}
             {(hoveredSegment === 'p1-supervision' || hoveredSegment === 'p2-supervision') && (
               <p>
-                <strong className="text-slate-800 font-semibold">Supervision Role (AED 1,837,000):</strong> The core consultancy, project management, and site supervision costs which remain static across both development paths.
+                <strong className="text-slate-800 font-semibold">Supervision Role (AED 1,294,200):</strong> The core consultancy, project management, and site supervision costs which remain static across both development paths.
               </p>
             )}
             {(hoveredSegment === 'p1-sustainability' || hoveredSegment === 'p2-sustainability') && (
               <p>
-                <strong className="text-teal-600 font-semibold">Sustainability / PQP Role (AED 252,000):</strong> The optional sustainability role ensures Estidama compliance, tracking materials provenance and carbon footprint reduction objectives.
+                <strong className="text-teal-600 font-semibold">Sustainability / PQP Role (AED 45,000):</strong> The optional sustainability role ensures Estidama compliance, tracking materials provenance and carbon footprint reduction objectives.
               </p>
             )}
           </div>

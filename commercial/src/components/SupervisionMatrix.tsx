@@ -40,103 +40,158 @@ export interface RoleData {
 
 const DEFAULT_ROLES: RoleData[] = [
   {
-    id: "re",
-    name: "Resident Engineer",
+    id: "pm",
+    name: "Project Manager (Engr. Galal Sakran)",
     category: "technical",
-    duration: 15,
+    duration: 18,
     allocation: 100,
-    rate: 32000,
-    description: "Lead site supervisor. Manages engineering team, contractor correspondence, and overall quality assurance.",
-    tooltip: "Standard FIDIC Resident Engineer role. Fully allocated for project duration + mobilization.",
+    rate: 45000,
+    description: "Lead Project Manager responsible for overall contract execution, client liaison, and site management.",
+    tooltip: "Full-time project management resource deployed for the entire 18 months supervision phase.",
     isActive: true
   },
   {
-    id: "ee",
-    name: "Electrical Engineer",
+    id: "re",
+    name: "Resident Engineer / Structural Engr (Engr. Ahmed Awad)",
     category: "technical",
-    duration: 12,
-    allocation: 50,
+    duration: 18,
+    allocation: 10,
+    rate: 32000,
+    description: "Resident Engineer and Structural Engineer supervising general engineering quality and structural execution.",
+    tooltip: "Part-time structural monitoring (10% allocation) throughout the 18 months timeline.",
+    isActive: true
+  },
+  {
+    id: "arch",
+    name: "Architect / ID Engineer (Engr. Mohamed Al Mahdy)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
     rate: 30000,
-    description: "Supervises MV/LV distribution, lighting, fire alarms, and extra-low voltage (ELV) networks.",
-    tooltip: "Assumes half-time allocation or split scheduling aligned with electrical installation phase.",
+    description: "Architectural & Interior Design Supervisor reviewing fit-outs, spatial integration, and finishing quality.",
+    tooltip: "Supervision support (10% allocation) aligned with finishing works.",
     isActive: true
   },
   {
     id: "me",
-    name: "Mechanical Engineer",
+    name: "Mechanical Engineer (Engr. Lolla Kumar)",
     category: "technical",
-    duration: 12,
-    allocation: 50,
+    duration: 18,
+    allocation: 10,
     rate: 30000,
-    description: "Inspects HVAC systems, plumbing, drainage, fire fighting, and central plant machinery.",
-    tooltip: "Aligned with mechanical structural penetration and fit-out phases.",
+    description: "Mechanical systems supervisor overseeing HVAC installation, firefighting, drainage, and plumbing works.",
+    tooltip: "Mechanical systems engineering audit (10% allocation) across the project duration.",
     isActive: true
   },
   {
-    id: "ci",
-    name: "Civil Inspector",
+    id: "ee",
+    name: "Electrical Engineer (Engr. Rafik Nabil)",
     category: "technical",
-    duration: 15,
-    allocation: 100,
-    rate: 16000,
-    description: "Performs daily structural concrete, steelwork, architectural finishes, and structural safety checks.",
-    tooltip: "Full-time presence on site to monitor concrete pours and structural works.",
+    duration: 18,
+    allocation: 10,
+    rate: 30000,
+    description: "Electrical engineer supervising MV/LV networks, power generation, cabling, and safety systems.",
+    tooltip: "Electrical safety and cabling auditing (10% allocation) for 18 months.",
     isActive: true
   },
   {
-    id: "mepi",
-    name: "MEP Inspector",
+    id: "elv",
+    name: "ELV Engineer (Engr. Ahamed Safiq)",
     category: "technical",
-    duration: 13,
-    allocation: 100,
-    rate: 15000,
-    description: "Conducts site inspections for conduits, plumbing pressure tests, and HVAC ducting installations.",
-    tooltip: "Handles day-to-day inspections for electrical and mechanical works on site.",
-    isActive: true
-  },
-  {
-    id: "sv",
-    name: "Surveyor",
-    category: "technical",
-    duration: 4,
-    allocation: 100,
-    rate: 10000,
-    description: "Verifies structural layouts, coordinates, benchmark heights, and vertical alignments.",
-    tooltip: "Required during substructure, piling, and initial superstructure alignment phases.",
-    isActive: true
-  },
-  {
-    id: "dc",
-    name: "Document Controller",
-    category: "support",
-    duration: 15,
-    allocation: 100,
-    rate: 18000,
-    description: "Manages the Electronic Document Management System (EDMS), tracking RFIs, submittals, and approvals.",
-    tooltip: "Essential administrative support to track all engineering communication, drawings, and logs.",
-    isActive: true
-  },
-  {
-    id: "hsse",
-    name: "HSSE Officer",
-    category: "support",
-    duration: 14,
-    allocation: 100,
-    rate: 18000,
-    description: "Enforces health, safety, environmental guidelines, conducts audits, and reports site incidents.",
-    tooltip: "Mandatory safety supervision required by local authorities throughout major works.",
+    duration: 18,
+    allocation: 10,
+    rate: 30000,
+    description: "Extra-Low Voltage Engineer supervising telecom, surveillance (CCTV), access control, and smart building networks.",
+    tooltip: "ELV and IT infrastructure supervision (10% allocation) for 18 months.",
     isActive: true
   },
   {
     id: "sust",
-    name: "Sustainability / PQP",
+    name: "Sustainability Engineer (Engr. Elmorsi Elbarky)",
     category: "optional",
-    duration: 14,
-    allocation: 100,
+    duration: 18,
+    allocation: 10,
+    rate: 25000,
+    description: "Estidama Pearl Qualified Professional / Sustainability Engineer overseeing green ratings and energy compliance.",
+    tooltip: "Toggled role for green building Estidama certification compliance (10% allocation).",
+    isActive: true
+  },
+  {
+    id: "ci",
+    name: "Civil Inspector (Albert Balingit)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
+    rate: 16000,
+    description: "Civil inspector verifying daily structural concrete pours, steel reinforcement, and masonry work.",
+    tooltip: "Daily civil works monitoring and site inspection (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "mi",
+    name: "Mechanical Inspector (Engr. Mithun Gangadharan)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
+    rate: 15000,
+    description: "Mechanical inspector verifying daily HVAC ducting, plumbing pressure tests, and firefighting piping.",
+    tooltip: "Daily mechanical installations inspection (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "ei",
+    name: "Electrical Inspector (Engr. Ahmed Hussain Khalifa)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
+    rate: 15000,
+    description: "Electrical inspector conducting daily audits of conduits, wiring, and DB terminations on site.",
+    tooltip: "Daily electrical safety and installation inspection (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "qs",
+    name: "Quantity Surveyor (Engr. Vener Moreno)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
     rate: 18000,
-    description: "Estidama Pearl Qualified Professional / LEED AP. Coordinates green ratings and sustainability audits.",
-    tooltip: "Optional role. Essential for government projects requiring specific Estidama rating compliance.",
-    isActive: false // Optional toggled off by default
+    description: "Quantity Surveyor tracking monthly measurements, material inventories, and variation orders.",
+    tooltip: "Commercial auditing and progress verification (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "pe",
+    name: "Planning Engineer (Engr. John Aboud)",
+    category: "technical",
+    duration: 18,
+    allocation: 10,
+    rate: 20000,
+    description: "Planning engineer auditing schedule delays, critical paths, and project milestones.",
+    tooltip: "Schedule audit and progress reports (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "hse",
+    name: "HSE Engineer (Engr. Khaled Mustafa)",
+    category: "support",
+    duration: 18,
+    allocation: 10,
+    rate: 18000,
+    description: "Health, Safety & Environment engineer enforcing local safety codes and environmental regulations.",
+    tooltip: "HSE safety compliance and incident prevention (10% allocation) for 18 months.",
+    isActive: true
+  },
+  {
+    id: "dc",
+    name: "Document Controller (Evelyn Carettero)",
+    category: "support",
+    duration: 18,
+    allocation: 10,
+    rate: 15000,
+    description: "Document controller administering logs of RFIs, technical submittals, and authority letters.",
+    tooltip: "Correspondence record management and file archiving (10% allocation) for 18 months.",
+    isActive: true
   }
 ];
 
@@ -157,30 +212,40 @@ const PRESET_SCENARIOS: { [key: string]: Scenario } = {
     name: "Fast-Track Build (10m)",
     description: "Compressed timeline with heightened engineering allocations to fast-track testing & handover.",
     adjustments: {
-      re: { duration: 10, allocation: 100 },
-      ee: { duration: 8, allocation: 100 },
-      me: { duration: 8, allocation: 100 },
-      ci: { duration: 10, allocation: 100 },
-      mepi: { duration: 9, allocation: 100 },
-      sv: { duration: 3, allocation: 100 },
-      dc: { duration: 10, allocation: 100 },
-      hsse: { duration: 10, allocation: 100 },
-      sust: { duration: 9, allocation: 100, isActive: true }
+      pm: { duration: 10, allocation: 100 },
+      re: { duration: 10, allocation: 20 },
+      arch: { duration: 10, allocation: 20 },
+      me: { duration: 10, allocation: 20 },
+      ee: { duration: 10, allocation: 20 },
+      elv: { duration: 10, allocation: 20 },
+      sust: { duration: 10, allocation: 20, isActive: true },
+      ci: { duration: 10, allocation: 20 },
+      mi: { duration: 10, allocation: 20 },
+      ei: { duration: 10, allocation: 20 },
+      qs: { duration: 10, allocation: 20 },
+      pe: { duration: 10, allocation: 20 },
+      hse: { duration: 10, allocation: 20 },
+      dc: { duration: 10, allocation: 20 }
     }
   },
   complexInfrastructure: {
     name: "Complex Dev (24m)",
     description: "Extended infrastructure schedule with permanent civil inspections and multi-year coordination.",
     adjustments: {
-      re: { duration: 24, rate: 35000 },
-      ee: { duration: 20, allocation: 75, rate: 32000 },
-      me: { duration: 20, allocation: 75, rate: 32000 },
-      ci: { duration: 24, rate: 17000 },
-      mepi: { duration: 22, rate: 16000 },
-      sv: { duration: 8 },
-      dc: { duration: 24 },
-      hsse: { duration: 24 },
-      sust: { duration: 20, isActive: true }
+      pm: { duration: 24, allocation: 100 },
+      re: { duration: 24, allocation: 15 },
+      arch: { duration: 24, allocation: 15 },
+      me: { duration: 24, allocation: 15 },
+      ee: { duration: 24, allocation: 15 },
+      elv: { duration: 24, allocation: 15 },
+      sust: { duration: 24, allocation: 15, isActive: true },
+      ci: { duration: 24, allocation: 15 },
+      mi: { duration: 24, allocation: 15 },
+      ei: { duration: 24, allocation: 15 },
+      qs: { duration: 24, allocation: 15 },
+      pe: { duration: 24, allocation: 15 },
+      hse: { duration: 24, allocation: 15 },
+      dc: { duration: 24, allocation: 15 }
     }
   }
 };
@@ -224,8 +289,8 @@ export default function SupervisionMatrix() {
     setRoles((prevRoles) =>
       prevRoles.map((role) => {
         if (role.id === id) {
-          // If turning on sustainability, set to 100% allocation by default if it was 0
-          const updatedAlloc = role.id === "sust" && !role.isActive && role.allocation === 0 ? 100 : role.allocation;
+          // If turning on sustainability, set to 10% allocation by default if it was 0
+          const updatedAlloc = role.id === "sust" && !role.isActive && role.allocation === 0 ? 10 : role.allocation;
           return { ...role, isActive: !role.isActive, allocation: updatedAlloc };
         }
         return role;
@@ -316,21 +381,31 @@ export default function SupervisionMatrix() {
     }`;
 
     switch (iconName) {
+      case "pm":
+        return <ShieldCheck className={classStr} />;
       case "re":
         return <ShieldCheck className={classStr} />;
-      case "ee":
-        return <Wrench className={classStr} />;
+      case "arch":
+        return <Building className={classStr} />;
       case "me":
         return <Building className={classStr} />;
+      case "ee":
+        return <Wrench className={classStr} />;
+      case "elv":
+        return <Wrench className={classStr} />;
       case "ci":
         return <Users className={classStr} />;
-      case "mepi":
+      case "mi":
         return <Compass className={classStr} />;
-      case "sv":
+      case "ei":
         return <Compass className={classStr} />;
+      case "qs":
+        return <FileText className={classStr} />;
+      case "pe":
+        return <Clock className={classStr} />;
       case "dc":
         return <FileText className={classStr} />;
-      case "hsse":
+      case "hse":
         return <ShieldAlert className={classStr} />;
       case "sust":
         return <Leaf className={classStr} />;
@@ -493,7 +568,7 @@ export default function SupervisionMatrix() {
             </div>
             <div className="text-[11px] mt-2 flex items-center gap-1 text-slate-400">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan-400" />
-              <span>Fixed 8 baseline roles (contractual)</span>
+              <span>Fixed 13 baseline roles (contractual)</span>
             </div>
           </div>
 
@@ -522,7 +597,7 @@ export default function SupervisionMatrix() {
             </div>
             <div className="mt-2 flex items-center justify-between">
               <span className="text-[11px] text-slate-400">
-                {roles.find((r) => r.id === "sust")?.isActive ? "Toggled ON (100% allocation)" : "Sustainability PQP off"}
+                {roles.find((r) => r.id === "sust")?.isActive ? "Toggled ON (10% allocation)" : "Sustainability PQP off"}
               </span>
               <button
                 onClick={() => toggleRoleActive("sust")}
@@ -1101,8 +1176,13 @@ export default function SupervisionMatrix() {
 
       {/* Footer copyright and logo indicators */}
       <div className="max-w-7xl mx-auto w-full mt-12 pt-6 border-t border-[#1E2E4F]/40 flex flex-col sm:flex-row justify-between items-center gap-4 text-[11px] text-slate-500">
-        <div>
-          © {new Date().getFullYear()} Feasibility Study commercial models. Built for Site Supervision bids.
+        <div className="flex flex-col gap-1 text-left">
+          <div>
+            © {new Date().getFullYear()} Feasibility Study commercial models. Built for Site Supervision bids.
+          </div>
+          <div className="text-cyan-400/80 font-medium">
+            * Payment should be done within 30 days of the submission and all payments are excluded from VAT.
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <span className="hover:text-slate-400 transition-colors">Privacy Policy</span>

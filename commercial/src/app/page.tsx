@@ -28,6 +28,14 @@ export default function Home() {
             <section className="space-y-4">
               <CostComparisonChart />
             </section>
+            <section className="rounded-xl border border-[#1E2E4F]/40 bg-[#0B1528]/50 p-4 text-xs text-slate-400 flex items-center gap-3">
+              <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 shrink-0">
+                Payment Terms
+              </span>
+              <span>
+                Payment should be done within 30 days of the submission of each stage's deliverables. All payments are excluded from VAT.
+              </span>
+            </section>
           </div>
         )}
         {activeTab === "Option 1: Refurbishment" && (
