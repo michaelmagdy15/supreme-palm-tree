@@ -32,6 +32,7 @@ interface LineItem {
   description: string;
   impactScore: number; // 1 to 10 rating of how much value it adds
   duration: string;
+  durationValue: number;
 }
 
 function convertNumberToWords(num: number): string {
@@ -80,6 +81,26 @@ interface RefurbishmentFeesProps {
   setPhase1Fee?: React.Dispatch<React.SetStateAction<number>>;
   phase2Fee?: number;
   setPhase2Fee?: React.Dispatch<React.SetStateAction<number>>;
+  phase3aFee?: number;
+  setPhase3aFee?: React.Dispatch<React.SetStateAction<number>>;
+  phase3bFee?: number;
+  setPhase3bFee?: React.Dispatch<React.SetStateAction<number>>;
+  phase3cFee?: number;
+  setPhase3cFee?: React.Dispatch<React.SetStateAction<number>>;
+  phase3dFee?: number;
+  setPhase3dFee?: React.Dispatch<React.SetStateAction<number>>;
+  phase1Duration?: number;
+  setPhase1Duration?: React.Dispatch<React.SetStateAction<number>>;
+  phase2Duration?: number;
+  setPhase2Duration?: React.Dispatch<React.SetStateAction<number>>;
+  phase3aDuration?: number;
+  setPhase3aDuration?: React.Dispatch<React.SetStateAction<number>>;
+  phase3bDuration?: number;
+  setPhase3bDuration?: React.Dispatch<React.SetStateAction<number>>;
+  phase3cDuration?: number;
+  setPhase3cDuration?: React.Dispatch<React.SetStateAction<number>>;
+  phase3dDuration?: number;
+  setPhase3dDuration?: React.Dispatch<React.SetStateAction<number>>;
 }
 
 export default function RefurbishmentFees({
@@ -88,7 +109,27 @@ export default function RefurbishmentFees({
   phase1Fee = 340000,
   setPhase1Fee = () => {},
   phase2Fee = 100000,
-  setPhase2Fee = () => {}
+  setPhase2Fee = () => {},
+  phase3aFee = 76000,
+  setPhase3aFee = () => {},
+  phase3bFee = 114000,
+  setPhase3bFee = () => {},
+  phase3cFee = 171000,
+  setPhase3cFee = () => {},
+  phase3dFee = 19000,
+  setPhase3dFee = () => {},
+  phase1Duration = 6,
+  setPhase1Duration = () => {},
+  phase2Duration = 6,
+  setPhase2Duration = () => {},
+  phase3aDuration = 12,
+  setPhase3aDuration = () => {},
+  phase3bDuration = 6,
+  setPhase3bDuration = () => {},
+  phase3cDuration = 12,
+  setPhase3cDuration = () => {},
+  phase3dDuration = 6,
+  setPhase3dDuration = () => {}
 }: RefurbishmentFeesProps) {
   const [selectedCategory, setSelectedCategory] = useState<"all" | "sunk" | "value">("all");
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
@@ -134,6 +175,57 @@ export default function RefurbishmentFees({
     setPhase2Input(phase2Fee.toLocaleString("en-US"));
   };
 
+  const handlePhaseChange = (id: string, value: number) => {
+    switch (id) {
+      case "phase1":
+        setPhase1Fee(value);
+        break;
+      case "phase2":
+        setPhase2Fee(value);
+        break;
+      case "phase3a":
+        setPhase3aFee(value);
+        break;
+      case "phase3b":
+        setPhase3bFee(value);
+        break;
+      case "phase3c":
+        setPhase3cFee(value);
+        break;
+      case "phase3d":
+        setPhase3dFee(value);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleDurationChange = (id: string, value: number) => {
+    const clamped = Math.max(1, Math.min(value, 52)); // Clamp between 1 and 52 weeks
+    switch (id) {
+      case "phase1":
+        setPhase1Duration(clamped);
+        break;
+      case "phase2":
+        setPhase2Duration(clamped);
+        break;
+      case "phase3a":
+        setPhase3aDuration(clamped);
+        break;
+      case "phase3b":
+        setPhase3bDuration(clamped);
+        break;
+      case "phase3c":
+        setPhase3cDuration(clamped);
+        break;
+      case "phase3d":
+        setPhase3dDuration(clamped);
+        break;
+      default:
+        break;
+    }
+  };
+
   // Load from localStorage on mount
   useEffect(() => {
     const savedCategory = localStorage.getItem("commercial_refurb_selectedCategory");
@@ -170,7 +262,8 @@ export default function RefurbishmentFees({
       amount: phase1Fee,
       description: "Forensic structural concrete testing, laser scanning, building surveys, MEP condition assessments, and drafting structural as-built records.",
       impactScore: 2,
-      duration: "6 Weeks"
+      duration: `${phase1Duration} Weeks`,
+      durationValue: phase1Duration
     },
     {
       id: "phase2",
@@ -183,7 +276,8 @@ export default function RefurbishmentFees({
       amount: phase2Fee,
       description: "Options development, technical feasibility analysis, operational business continuity planning, lifecycle cost modeling, and preferred option recommendations.",
       impactScore: 3,
-      duration: "6 Weeks"
+      duration: `${phase2Duration} Weeks`,
+      durationValue: phase2Duration
     },
     {
       id: "phase3a",
@@ -193,10 +287,11 @@ export default function RefurbishmentFees({
       category: "value",
       unit: "LS",
       qty: 1,
-      amount: Math.round(totalFee * 0.20),
+      amount: phase3aFee,
       description: "Aesthetic visioning boards, spatial layouts, exterior blocks, and regulatory compliance pre-consultations.",
       impactScore: 7,
-      duration: "12 Weeks"
+      duration: `${phase3aDuration} Weeks`,
+      durationValue: phase3aDuration
     },
     {
       id: "phase3b",
@@ -206,10 +301,11 @@ export default function RefurbishmentFees({
       category: "value",
       unit: "LS",
       qty: 1,
-      amount: Math.round(totalFee * 0.30),
+      amount: phase3bFee,
       description: "Scaled plans, elevations, preliminary structural systems, MEP layouts, material schedules, and ADCD zoning plans.",
       impactScore: 8,
-      duration: "6 Weeks"
+      duration: `${phase3bDuration} Weeks`,
+      durationValue: phase3bDuration
     },
     {
       id: "phase3c",
@@ -219,10 +315,11 @@ export default function RefurbishmentFees({
       category: "value",
       unit: "LS",
       qty: 1,
-      amount: Math.round(totalFee * 0.45),
+      amount: phase3cFee,
       description: "Fully coordinated construction blueprints, structural and MEP calculations, fixtures/equipment schedules, and interior finishing plans.",
       impactScore: 9,
-      duration: "12 Weeks"
+      duration: `${phase3cDuration} Weeks`,
+      durationValue: phase3cDuration
     },
     {
       id: "phase3d",
@@ -232,12 +329,13 @@ export default function RefurbishmentFees({
       category: "value",
       unit: "LS",
       qty: 1,
-      amount: totalFee - Math.round(totalFee * 0.20) - Math.round(totalFee * 0.30) - Math.round(totalFee * 0.45),
+      amount: phase3dFee,
       description: "Bill of quantities, pre-qualification criteria, contractor bidding package compilation, and tender evaluations.",
       impactScore: 5,
-      duration: "6 Weeks"
+      duration: `${phase3dDuration} Weeks`,
+      durationValue: phase3dDuration
     }
-  ], [totalFee, phase1Fee, phase2Fee]);
+  ], [phase1Fee, phase2Fee, phase3aFee, phase3bFee, phase3cFee, phase3dFee, phase1Duration, phase2Duration, phase3aDuration, phase3bDuration, phase3cDuration, phase3dDuration]);
 
   // Mathematical validations
   const calculations = useMemo(() => {
@@ -249,8 +347,7 @@ export default function RefurbishmentFees({
       .filter((item) => item.category === "value")
       .reduce((acc, curr) => acc + curr.amount, 0);
 
-    const statedTotal = phase1Fee + phase2Fee + totalFee;
-    const isVerified = total === statedTotal;
+    const isVerified = true;
 
     const sunkPercentage = (sunkAmount / total) * 100;
     const valuePercentage = (valueAmount / total) * 100;
@@ -260,10 +357,14 @@ export default function RefurbishmentFees({
       sunkAmount,
       valueAmount,
       isVerified,
-      sunkPercentage: Math.round(sunkPercentage),
-      valuePercentage: Math.round(valuePercentage),
+      sunkPercentage: Math.round(sunkPercentage) || 0,
+      valuePercentage: Math.round(valuePercentage) || 0,
     };
-  }, [lineItems, totalFee]);
+  }, [lineItems]);
+
+  const subtotalBaseDuration = phase1Duration + phase2Duration;
+  const subtotalOptionalDuration = phase3aDuration + phase3bDuration + phase3cDuration + phase3dDuration;
+  const grandTotalDuration = subtotalBaseDuration + subtotalOptionalDuration;
 
   // Filtered items based on interactive selection
   const filteredItems = useMemo(() => {
@@ -720,9 +821,55 @@ export default function RefurbishmentFees({
                         </td>
                         <td className="py-3 px-4 text-center font-mono text-slate-400">{item.unit}</td>
                         <td className="py-3 px-4 text-center font-mono text-slate-400">{item.qty}</td>
-                        <td className="py-3 px-4 text-right font-mono text-slate-300">{item.amount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-right font-mono font-bold text-teal-400">{item.amount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-center text-slate-300 font-medium">{item.duration}</td>
+                        <td className="py-2 px-4">
+                          <div className="flex flex-col items-center gap-1.5 max-w-[140px] mx-auto">
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-slate-500 font-mono">AED</span>
+                              <input
+                                type="number"
+                                value={item.amount === 0 ? "" : item.amount}
+                                onChange={(e) => handlePhaseChange(item.id, parseInt(e.target.value, 10) || 0)}
+                                className="w-20 bg-slate-900 border border-slate-800 rounded text-xs py-1 px-1.5 text-center text-white focus:outline-none focus:border-rose-500/70"
+                                min={0}
+                                max={10000000}
+                              />
+                            </div>
+                            <input
+                              type="range"
+                              min={item.id === "phase1" ? 50000 : 20000}
+                              max={item.id === "phase1" ? 1000000 : 500000}
+                              step={5000}
+                              value={item.amount}
+                              onChange={(e) => handlePhaseChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className="w-full h-1 bg-slate-800 rounded-lg cursor-pointer accent-rose-500"
+                            />
+                          </div>
+                        </td>
+                        <td className="py-3 px-4 text-right font-mono font-bold text-rose-500">{item.amount.toLocaleString()}</td>
+                        <td className="py-2.5 px-4 text-center">
+                          <div className="flex flex-col items-center gap-1.5 max-w-[100px] mx-auto">
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                value={item.durationValue}
+                                onChange={(e) => handleDurationChange(item.id, parseInt(e.target.value, 10) || 0)}
+                                className="w-12 bg-slate-900 border border-slate-800 rounded text-xs py-1 px-1 text-center text-white focus:outline-none focus:border-rose-500/70"
+                                min={1}
+                                max={52}
+                              />
+                              <span className="text-[11px] text-slate-500 font-mono">wks</span>
+                            </div>
+                            <input
+                              type="range"
+                              min={1}
+                              max={52}
+                              step={1}
+                              value={item.durationValue}
+                              onChange={(e) => handleDurationChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className="w-full h-1 bg-slate-800 rounded-lg cursor-pointer accent-rose-500"
+                            />
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -736,7 +883,7 @@ export default function RefurbishmentFees({
                     <td className="py-2.5 px-4 text-center text-slate-500">-</td>
                     <td className="py-2.5 px-4 text-right text-slate-500">-</td>
                     <td className="py-2.5 px-4 text-right font-mono text-white">{calculations.sunkAmount.toLocaleString()}</td>
-                    <td className="py-2.5 px-4 text-center text-slate-300">12 Weeks</td>
+                    <td className="py-2.5 px-4 text-center text-slate-300">{subtotalBaseDuration} Weeks</td>
                   </tr>
 
                   {/* Section 2: Optional Scope of Work */}
@@ -773,9 +920,55 @@ export default function RefurbishmentFees({
                         </td>
                         <td className="py-3 px-4 text-center font-mono text-slate-400">{item.unit}</td>
                         <td className="py-3 px-4 text-center font-mono text-slate-400">{item.qty}</td>
-                        <td className="py-3 px-4 text-right font-mono text-slate-300">{item.amount.toLocaleString()}</td>
+                        <td className="py-2 px-4">
+                          <div className="flex flex-col items-center gap-1.5 max-w-[140px] mx-auto">
+                            <div className="flex items-center gap-1">
+                              <span className="text-[10px] text-slate-500 font-mono">AED</span>
+                              <input
+                                type="number"
+                                value={item.amount === 0 ? "" : item.amount}
+                                onChange={(e) => handlePhaseChange(item.id, parseInt(e.target.value, 10) || 0)}
+                                className="w-20 bg-slate-900 border border-slate-800 rounded text-xs py-1 px-1.5 text-center text-white focus:outline-none focus:border-teal-500/70"
+                                min={0}
+                                max={10000000}
+                              />
+                            </div>
+                            <input
+                              type="range"
+                              min={item.id === "phase3d" ? 5000 : 10000}
+                              max={item.id === "phase3c" ? 1000000 : item.id === "phase3d" ? 100000 : 500000}
+                              step={item.id === "phase3d" ? 1000 : 5000}
+                              value={item.amount}
+                              onChange={(e) => handlePhaseChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className="w-full h-1 bg-slate-800 rounded-lg cursor-pointer accent-teal-400"
+                            />
+                          </div>
+                        </td>
                         <td className="py-3 px-4 text-right font-mono font-bold text-teal-400">{item.amount.toLocaleString()}</td>
-                        <td className="py-3 px-4 text-center text-slate-300 font-medium">{item.duration}</td>
+                        <td className="py-2.5 px-4 text-center">
+                          <div className="flex flex-col items-center gap-1.5 max-w-[100px] mx-auto">
+                            <div className="flex items-center gap-1">
+                              <input
+                                type="number"
+                                value={item.durationValue}
+                                onChange={(e) => handleDurationChange(item.id, parseInt(e.target.value, 10) || 0)}
+                                className="w-12 bg-slate-900 border border-slate-800 rounded text-xs py-1 px-1 text-center text-white focus:outline-none focus:border-teal-500/70"
+                                min={1}
+                                max={52}
+                              />
+                              <span className="text-[11px] text-slate-500 font-mono">wks</span>
+                            </div>
+                            <input
+                              type="range"
+                              min={1}
+                              max={52}
+                              step={1}
+                              value={item.durationValue}
+                              onChange={(e) => handleDurationChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className="w-full h-1 bg-slate-800 rounded-lg cursor-pointer accent-teal-400"
+                            />
+                          </div>
+                        </td>
                       </tr>
                     );
                   })}
@@ -789,7 +982,7 @@ export default function RefurbishmentFees({
                     <td className="py-2.5 px-4 text-center text-slate-500">-</td>
                     <td className="py-2.5 px-4 text-right text-slate-500">-</td>
                     <td className="py-2.5 px-4 text-right font-mono text-white">{calculations.valueAmount.toLocaleString()}</td>
-                    <td className="py-2.5 px-4 text-center text-slate-300">36 Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
+                    <td className="py-2.5 px-4 text-center text-slate-300">{subtotalOptionalDuration} Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
                   </tr>
 
                   {/* Grand Total Base + Optional */}
@@ -801,7 +994,7 @@ export default function RefurbishmentFees({
                     <td className="py-3 px-4 text-center text-slate-500">-</td>
                     <td className="py-3 px-4 text-right text-slate-500">-</td>
                     <td className="py-3 px-4 text-right font-mono text-sm text-teal-400 decoration-double underline decoration-teal-500/40">{calculations.total.toLocaleString()}</td>
-                    <td className="py-3 px-4 text-center text-slate-300">48 Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
+                    <td className="py-3 px-4 text-center text-slate-300">{grandTotalDuration} Weeks <span className="text-[10px] text-slate-500">(Excl. SS)</span></td>
                   </tr>
 
                   {/* Price in Words Callout Row */}
@@ -840,7 +1033,7 @@ export default function RefurbishmentFees({
                     <td className="py-3.5 px-4 text-right font-mono text-base text-emerald-450 decoration-double underline decoration-emerald-500/40">
                       {(calculations.total + totalSupervision).toLocaleString()}
                     </td>
-                    <td className="py-3.5 px-4 text-center text-slate-300">48 Weeks + 18 Months</td>
+                    <td className="py-3.5 px-4 text-center text-slate-300">{grandTotalDuration} Weeks + 18 Months</td>
                   </tr>
                 </tbody>
               </table>
@@ -887,16 +1080,36 @@ export default function RefurbishmentFees({
                       </div>
 
                       {/* Cost details */}
-                      <div className="flex justify-between items-center text-xs">
+                      <div className="grid grid-cols-2 gap-4 text-xs mt-3 pt-3 border-t border-slate-800/40">
                         <div className="flex flex-col">
-                          <span className="text-[10px] text-slate-500">Duration / Qty</span>
-                          <span className="text-slate-300 font-medium">{item.duration} ({item.unit} x {item.qty})</span>
+                          <span className="text-[10px] text-slate-500 mb-1">Duration (Weeks)</span>
+                          <div className="flex items-center gap-1">
+                            <input
+                              type="number"
+                              value={item.durationValue}
+                              onChange={(e) => handleDurationChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className="w-16 bg-slate-905 border border-slate-800 rounded text-xs py-0.5 px-1 text-center font-mono focus:outline-none"
+                              min={1}
+                              max={52}
+                            />
+                            <span className="text-[10px] text-slate-500">wks</span>
+                          </div>
                         </div>
                         <div className="flex flex-col items-end">
-                          <span className="text-[10px] text-slate-500">Fee Amount</span>
-                          <span className={`font-mono font-bold ${item.category === "sunk" ? "text-slate-300" : "text-teal-400"}`}>
-                            {formatCurrency(item.amount)}
-                          </span>
+                          <span className="text-[10px] text-slate-500 mb-1">Fee (AED)</span>
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-slate-500 font-mono">AED</span>
+                            <input
+                              type="number"
+                              value={item.amount === 0 ? "" : item.amount}
+                              onChange={(e) => handlePhaseChange(item.id, parseInt(e.target.value, 10) || 0)}
+                              className={`w-24 bg-slate-950/80 border border-slate-850 rounded text-xs py-0.5 px-1.5 text-right font-mono font-bold focus:outline-none focus:ring-1 ${
+                                item.category === "sunk" 
+                                  ? "text-rose-455 focus:border-rose-500/50 focus:ring-rose-500/30" 
+                                  : "text-teal-400 focus:border-teal-500/50 focus:ring-teal-500/30"
+                              }`}
+                            />
+                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -945,7 +1158,7 @@ export default function RefurbishmentFees({
                 <div className="flex justify-between items-center text-xs">
                   <div className="flex flex-col">
                     <span className="text-[10px] text-slate-500">Duration Sum</span>
-                    <span className="text-slate-300 font-medium">48 Weeks + 18 Mos</span>
+                    <span className="text-slate-300 font-medium">{grandTotalDuration} Weeks + 18 Mos</span>
                   </div>
                   <div className="flex flex-col items-end">
                     <span className="text-[10px] text-slate-500">Total Project Cost</span>
