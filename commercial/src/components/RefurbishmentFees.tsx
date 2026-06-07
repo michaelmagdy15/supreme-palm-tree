@@ -777,7 +777,7 @@ export default function RefurbishmentFees({
             </div>
           </div>
           {/* Interactive Line Items List / Table */}
-          <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden print-page-break">
+          <div className="lg:col-span-2 bg-slate-900/40 border border-slate-800 rounded-xl shadow-xl flex flex-col overflow-hidden">
                         {/* Table Header Controls */}
             <div className="p-5 border-b border-slate-800 bg-slate-900/20 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
               <div>

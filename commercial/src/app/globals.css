@@ -87,7 +87,7 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
   }
   .print-grid-3 {
-    grid-template-columns: 1fr !important; /* Stack 3 columns vertically in portrait */
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important; /* 3 columns side-by-side in portrait print */
   }
   .print-grid-4 {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important; /* 2x2 grid for 4 columns in portrait */
@@ -132,5 +132,27 @@ body {
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none !important;
     margin: 0 !important;
+  }
+
+  /* Style relative input wrappers containing currency prefixes for clean printing */
+  .print-input-wrapper {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+  }
+  .print-input-wrapper > div {
+    position: static !important;
+    padding: 0 !important;
+    display: inline-block !important;
+    pointer-events: auto !important;
+  }
+  .print-input-wrapper > input {
+    padding: 0 !important;
+    display: inline-block !important;
+    width: auto !important;
   }
 }

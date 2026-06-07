@@ -13,7 +13,8 @@ import {
   Coins,
   ChevronDown,
   ChevronUp,
-  LayoutGrid
+  LayoutGrid,
+  FileSpreadsheet
 } from "lucide-react";
 
 interface Phase {
@@ -106,6 +107,40 @@ interface DesignFeesProps {
 export default function DesignFees({ totalFee, setTotalFee }: DesignFeesProps) {
   const [feeInput, setFeeInput] = useState<string>(totalFee.toLocaleString("en-US"));
   const [expandedPhase, setExpandedPhase] = useState<number | null>(null);
+  const [showNotification, setShowNotification] = useState(false);
+  const [notificationText, setNotificationText] = useState("");
+
+  const triggerNotification = (text: string) => {
+    setNotificationText(text);
+    setShowNotification(true);
+  };
+
+  React.useEffect(() => {
+    if (showNotification) {
+      const timer = setTimeout(() => setShowNotification(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showNotification]);
+
+  const copyCSVToClipboard = () => {
+    const headers = ["#", "Phase", "Percentage", "Cost (AED)", "Description", "Key Deliverables"];
+    const rowsCSV = phases.map((phase, idx) => [
+      idx + 1,
+      phase.name,
+      `${phase.percentage * 100}%`,
+      Math.round(totalFee * phase.percentage),
+      phase.description,
+      phase.deliverables.join("; ")
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rowsCSV.map((row) => row.map((val) => `"${val}"`).join(","))
+    ].join("\n");
+
+    navigator.clipboard.writeText(csvContent);
+    triggerNotification("Copied Option 2 Design Fees data as CSV to clipboard!");
+  };
 
   // Sync feeInput when totalFee prop changes
   React.useEffect(() => {
@@ -187,7 +222,22 @@ export default function DesignFees({ totalFee, setTotalFee }: DesignFeesProps) {
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-1">
+    <div className="w-full max-w-4xl mx-auto p-1 relative">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {showNotification && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-6 right-6 z-50 flex items-center gap-3 bg-[#0B1528] border border-teal-500/30 text-teal-300 px-5 py-3.5 rounded-lg shadow-xl shadow-black/40 backdrop-blur-md"
+          >
+            <div className="w-2 h-2 rounded-full bg-teal-400 animate-pulse" />
+            <span className="text-xs font-semibold tracking-wide">{notificationText}</span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Outer Card Wrap with Glassmorphism */}
       <div className="relative overflow-hidden rounded-2xl border border-slate-800 bg-slate-900/50 p-6 backdrop-blur-md shadow-2xl shadow-slate-950/50">
         
@@ -210,9 +260,20 @@ export default function DesignFees({ totalFee, setTotalFee }: DesignFeesProps) {
             </p>
           </div>
           
-          <div className="flex items-center gap-2 self-start md:self-center px-3 py-1.5 rounded-lg bg-slate-950/40 border border-slate-800/80 mt-3 md:mt-0">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-xs font-semibold text-slate-300">Live Calculations</span>
+          <div className="flex items-center gap-3 self-start md:self-center mt-3 md:mt-0 no-print">
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-slate-950/40 border border-slate-800/80">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span className="text-xs font-semibold text-slate-300">Live Calculations</span>
+            </div>
+            
+            <button
+              onClick={copyCSVToClipboard}
+              className="bg-[#0B1528] hover:bg-slate-800 text-slate-300 border border-[#1E2E4F]/60 text-xs px-3.5 py-2.5 rounded-lg font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+              title="Copy Option 2 Design Fees data to clipboard as CSV"
+            >
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Export CSV</span>
+            </button>
           </div>
         </div>
 
@@ -226,7 +287,7 @@ export default function DesignFees({ totalFee, setTotalFee }: DesignFeesProps) {
                 Target Total Design Fee
               </label>
               
-              <div className="relative rounded-lg shadow-sm">
+              <div className="relative rounded-lg shadow-sm print-input-wrapper">
                 <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                   <span className="text-slate-400 font-medium text-sm">AED</span>
                 </div>
