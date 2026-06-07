@@ -106,9 +106,9 @@ interface RefurbishmentFeesProps {
 export default function RefurbishmentFees({
   roles = [],
   totalFee = 380000,
-  phase1Fee = 340000,
+  phase1Fee = 270000,
   setPhase1Fee = () => {},
-  phase2Fee = 100000,
+  phase2Fee = 70000,
   setPhase2Fee = () => {},
   phase3aFee = 76000,
   setPhase3aFee = () => {},
@@ -750,10 +750,10 @@ export default function RefurbishmentFees({
                 <div className="flex justify-end">
                   <button 
                     onClick={() => {
-                      setPhase1Fee(340000);
-                      setPhase1Input((340000).toLocaleString("en-US"));
-                      setPhase2Fee(100000);
-                      setPhase2Input((100000).toLocaleString("en-US"));
+                      setPhase1Fee(270000);
+                      setPhase1Input((270000).toLocaleString("en-US"));
+                      setPhase2Fee(70000);
+                      setPhase2Input((70000).toLocaleString("en-US"));
                     }}
                     className="text-[10px] text-slate-500 hover:text-rose-455 transition-colors font-semibold"
                   >

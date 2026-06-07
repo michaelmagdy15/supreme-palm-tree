@@ -11,8 +11,8 @@ import SupervisionMatrix, { DEFAULT_ROLES, RoleData } from "@/components/Supervi
 export default function Home() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("Executive Summary");
   const [totalFee, setTotalFee] = useState<number>(380000);
-  const [phase1Fee, setPhase1Fee] = useState<number>(340000);
-  const [phase2Fee, setPhase2Fee] = useState<number>(100000);
+  const [phase1Fee, setPhase1Fee] = useState<number>(270000);
+  const [phase2Fee, setPhase2Fee] = useState<number>(70000);
   const [phase3aFee, setPhase3aFee] = useState<number>(76000);
   const [phase3bFee, setPhase3bFee] = useState<number>(114000);
   const [phase3cFee, setPhase3cFee] = useState<number>(171000);
@@ -30,6 +30,29 @@ export default function Home() {
 
   // Load state from localStorage on client mount
   useEffect(() => {
+    const CURRENT_VERSION = "2.5";
+    const savedVersion = localStorage.getItem("commercial_version");
+    
+    if (savedVersion !== CURRENT_VERSION) {
+      localStorage.removeItem("commercial_design_totalFee");
+      localStorage.removeItem("commercial_refurb_phase1Fee");
+      localStorage.removeItem("commercial_refurb_phase2Fee");
+      localStorage.removeItem("commercial_refurb_phase3aFee");
+      localStorage.removeItem("commercial_refurb_phase3bFee");
+      localStorage.removeItem("commercial_refurb_phase3cFee");
+      localStorage.removeItem("commercial_refurb_phase3dFee");
+      localStorage.removeItem("commercial_supervision_roles");
+      localStorage.removeItem("commercial_supervision_activeScenario");
+      localStorage.removeItem("commercial_refurb_phase1Duration");
+      localStorage.removeItem("commercial_refurb_phase2Duration");
+      localStorage.removeItem("commercial_refurb_phase3aDuration");
+      localStorage.removeItem("commercial_refurb_phase3bDuration");
+      localStorage.removeItem("commercial_refurb_phase3cDuration");
+      localStorage.removeItem("commercial_refurb_phase3dDuration");
+      
+      localStorage.setItem("commercial_version", CURRENT_VERSION);
+    }
+
     const savedTab = localStorage.getItem("commercial_activeTab");
     if (savedTab) {
       setActiveTab(savedTab as DashboardTab);
