@@ -76,11 +76,63 @@ function convertNumberToWords(num: number): string {
 interface RefurbishmentFeesProps {
   roles?: RoleData[];
   totalFee?: number;
+  phase1Fee?: number;
+  setPhase1Fee?: React.Dispatch<React.SetStateAction<number>>;
+  phase2Fee?: number;
+  setPhase2Fee?: React.Dispatch<React.SetStateAction<number>>;
 }
 
-export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: RefurbishmentFeesProps) {
+export default function RefurbishmentFees({
+  roles = [],
+  totalFee = 380000,
+  phase1Fee = 340000,
+  setPhase1Fee = () => {},
+  phase2Fee = 100000,
+  setPhase2Fee = () => {}
+}: RefurbishmentFeesProps) {
   const [selectedCategory, setSelectedCategory] = useState<"all" | "sunk" | "value">("all");
   const [hoveredItemId, setHoveredItemId] = useState<string | null>(null);
+
+  const [phase1Input, setPhase1Input] = useState(phase1Fee.toLocaleString("en-US"));
+  const [phase2Input, setPhase2Input] = useState(phase2Fee.toLocaleString("en-US"));
+
+  useEffect(() => {
+    setPhase1Input(phase1Fee.toLocaleString("en-US"));
+  }, [phase1Fee]);
+
+  useEffect(() => {
+    setPhase2Input(phase2Fee.toLocaleString("en-US"));
+  }, [phase2Fee]);
+
+  const handlePhase1InputChange = (val: string) => {
+    setPhase1Input(val);
+    const digits = val.replace(/\D/g, "");
+    const parsed = parseInt(digits, 10);
+    if (!isNaN(parsed)) {
+      setPhase1Fee(Math.min(parsed, 10000000));
+    } else {
+      setPhase1Fee(0);
+    }
+  };
+
+  const handlePhase1Blur = () => {
+    setPhase1Input(phase1Fee.toLocaleString("en-US"));
+  };
+
+  const handlePhase2InputChange = (val: string) => {
+    setPhase2Input(val);
+    const digits = val.replace(/\D/g, "");
+    const parsed = parseInt(digits, 10);
+    if (!isNaN(parsed)) {
+      setPhase2Fee(Math.min(parsed, 10000000));
+    } else {
+      setPhase2Fee(0);
+    }
+  };
+
+  const handlePhase2Blur = () => {
+    setPhase2Input(phase2Fee.toLocaleString("en-US"));
+  };
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -115,7 +167,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
       category: "sunk",
       unit: "LS",
       qty: 1,
-      amount: 300000,
+      amount: phase1Fee,
       description: "Forensic structural concrete testing, laser scanning, building surveys, MEP condition assessments, and drafting structural as-built records.",
       impactScore: 2,
       duration: "6 Weeks"
@@ -128,7 +180,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
       category: "sunk",
       unit: "LS",
       qty: 1,
-      amount: 0,
+      amount: phase2Fee,
       description: "Options development, technical feasibility analysis, operational business continuity planning, lifecycle cost modeling, and preferred option recommendations.",
       impactScore: 3,
       duration: "6 Weeks"
@@ -185,7 +237,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
       impactScore: 5,
       duration: "6 Weeks"
     }
-  ], [totalFee]);
+  ], [totalFee, phase1Fee, phase2Fee]);
 
   // Mathematical validations
   const calculations = useMemo(() => {
@@ -197,7 +249,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
       .filter((item) => item.category === "value")
       .reduce((acc, curr) => acc + curr.amount, 0);
 
-    const statedTotal = 300000 + totalFee;
+    const statedTotal = phase1Fee + phase2Fee + totalFee;
     const isVerified = total === statedTotal;
 
     const sunkPercentage = (sunkAmount / total) * 100;
@@ -275,7 +327,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
               <div>
                 <p className="text-xs font-semibold uppercase text-slate-400 tracking-wider">Stated Investment Total</p>
                 <h3 className="text-3xl font-extrabold text-white mt-2 tracking-tight">
-                  {formatCurrency(300000 + totalFee)}
+                  {formatCurrency(calculations.total)}
                 </h3>
               </div>
               <div className="p-2 bg-slate-800 rounded-lg text-teal-400">
@@ -431,7 +483,7 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
 
                 {/* Donut Center Info */}
                 <div className="absolute text-center">
-                  <span className="text-2xl font-black text-white">AED {(300000 + totalFee).toLocaleString()}</span>
+                  <span className="text-2xl font-black text-white">AED {calculations.total.toLocaleString()}</span>
                   <p className="text-[10px] text-slate-400 uppercase tracking-wider mt-0.5">Total Allocation</p>
                 </div>
               </div>
@@ -474,6 +526,89 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
                   </div>
                 </button>
               </div>
+              {/* Fee Adjusters section */}
+              <div className="mt-6 pt-6 border-t border-slate-800 space-y-4">
+                <h4 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                  <Calculator className="h-3.5 w-3.5 text-rose-500" />
+                  Adjust Base Scope Fees (Option 1)
+                </h4>
+                
+                {/* Phase 1 Adjuster */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] text-slate-400 font-semibold">Phase.01 (Survey/TDD)</span>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-2 text-xs text-rose-400 font-bold">AED</span>
+                      <input 
+                        type="text" 
+                        value={phase1Input}
+                        onChange={(e) => handlePhase1InputChange(e.target.value)}
+                        onBlur={handlePhase1Blur}
+                        className="w-28 pl-9 pr-2 py-1 text-xs font-mono font-bold bg-slate-950 border border-slate-800 rounded text-right text-rose-455 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/30"
+                      />
+                    </div>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="50000" 
+                    max="1000000" 
+                    step="10000"
+                    value={phase1Fee}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setPhase1Fee(val);
+                      setPhase1Input(val.toLocaleString("en-US"));
+                    }}
+                    className="w-full accent-rose-500 h-1 bg-slate-800 rounded-lg cursor-pointer appearance-none"
+                  />
+                </div>
+
+                {/* Phase 2 Adjuster */}
+                <div className="space-y-1.5">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[11px] text-slate-400 font-semibold">Phase.02 (Feasibility)</span>
+                    <div className="relative flex items-center">
+                      <span className="absolute left-2 text-xs text-rose-400 font-bold">AED</span>
+                      <input 
+                        type="text" 
+                        value={phase2Input}
+                        onChange={(e) => handlePhase2InputChange(e.target.value)}
+                        onBlur={handlePhase2Blur}
+                        className="w-28 pl-9 pr-2 py-1 text-xs font-mono font-bold bg-slate-950 border border-slate-800 rounded text-right text-rose-455 focus:outline-none focus:border-rose-500/50 focus:ring-1 focus:ring-rose-500/30"
+                      />
+                    </div>
+                  </div>
+                  <input 
+                    type="range" 
+                    min="20000" 
+                    max="500000" 
+                    step="5000"
+                    value={phase2Fee}
+                    onChange={(e) => {
+                      const val = parseInt(e.target.value, 10);
+                      setPhase2Fee(val);
+                      setPhase2Input(val.toLocaleString("en-US"));
+                    }}
+                    className="w-full accent-rose-500 h-1 bg-slate-800 rounded-lg cursor-pointer appearance-none"
+                  />
+                </div>
+
+                {/* Reset button for fees */}
+                <div className="flex justify-end">
+                  <button 
+                    onClick={() => {
+                      setPhase1Fee(340000);
+                      setPhase1Input((340000).toLocaleString("en-US"));
+                      setPhase2Fee(100000);
+                      setPhase2Input((100000).toLocaleString("en-US"));
+                    }}
+                    className="text-[10px] text-slate-500 hover:text-rose-455 transition-colors font-semibold"
+                  >
+                    Reset Defaults
+                  </button>
+                </div>
+              </div>
+
             </div>
 
             <div className="pt-4 mt-4 border-t border-slate-800 flex justify-between items-center">
@@ -767,59 +902,59 @@ export default function RefurbishmentFees({ roles = [], totalFee = 380000 }: Ref
                     </motion.div>
                   );
                 })}
+              </AnimatePresence>
 
-                {/* Mobile Supervision Card */}
-                <div className="p-4 rounded-xl border bg-slate-900/40 border-slate-800 text-slate-300">
-                  <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
-                    <div>
-                      <div className="text-[10px] text-slate-500 font-semibold font-mono">2.5 | Phase.04</div>
-                      <span className="font-semibold text-xs text-white leading-snug">
-                        Construction Site Supervision
-                      </span>
-                    </div>
-                    <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 tracking-wider">
-                      Supervision
+              {/* Mobile Supervision Card */}
+              <div key="mobile-supervision" className="p-4 rounded-xl border bg-slate-900/40 border-slate-800 text-slate-300">
+                <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
+                  <div>
+                    <div className="text-[10px] text-slate-500 font-semibold font-mono">2.5 | Phase.04</div>
+                    <span className="font-semibold text-xs text-white leading-snug">
+                      Construction Site Supervision
                     </span>
                   </div>
+                  <span className="shrink-0 text-[8px] font-bold px-1.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 tracking-wider">
+                    Supervision
+                  </span>
+                </div>
 
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-slate-500">Duration</span>
-                      <span className="text-slate-300 font-medium">18 Months (Indicative)</span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-[10px] text-slate-500">Fee Amount</span>
-                      <span className="font-mono font-bold text-teal-450">
-                        {formatCurrency(totalSupervision)}
-                      </span>
-                    </div>
+                <div className="flex justify-between items-center text-xs">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-slate-500">Duration</span>
+                    <span className="text-slate-300 font-medium">18 Months (Indicative)</span>
+                  </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-slate-500">Fee Amount</span>
+                    <span className="font-mono font-bold text-teal-450">
+                      {formatCurrency(totalSupervision)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Mobile Grand Total Card */}
+              <div key="mobile-grand-total" className="p-4 rounded-xl border bg-slate-900/60 border-teal-950/40 text-slate-300">
+                <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
+                  <div>
+                    <span className="font-bold text-xs text-white uppercase tracking-wider">
+                      Grand Total (Base + Optional + SS)
+                    </span>
                   </div>
                 </div>
 
-                {/* Mobile Grand Total Card */}
-                <div className="p-4 rounded-xl border bg-slate-900/60 border-teal-950/40 text-slate-300">
-                  <div className="flex justify-between items-start gap-2.5 mb-2 pb-2 border-b border-slate-800/40">
-                    <div>
-                      <span className="font-bold text-xs text-white uppercase tracking-wider">
-                        Grand Total (Base + Optional + SS)
-                      </span>
-                    </div>
+                <div className="flex justify-between items-center text-xs">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-slate-500">Duration Sum</span>
+                    <span className="text-slate-300 font-medium">48 Weeks + 18 Mos</span>
                   </div>
-
-                  <div className="flex justify-between items-center text-xs">
-                    <div className="flex flex-col">
-                      <span className="text-[10px] text-slate-500">Duration Sum</span>
-                      <span className="text-slate-300 font-medium">48 Weeks + 18 Mos</span>
-                    </div>
-                    <div className="flex flex-col items-end">
-                      <span className="text-[10px] text-slate-500">Total Project Cost</span>
-                      <span className="font-mono font-black text-emerald-400 text-sm">
-                        {formatCurrency(calculations.total + totalSupervision)}
-                      </span>
-                    </div>
+                  <div className="flex flex-col items-end">
+                    <span className="text-[10px] text-slate-500">Total Project Cost</span>
+                    <span className="font-mono font-black text-emerald-400 text-sm">
+                      {formatCurrency(calculations.total + totalSupervision)}
+                    </span>
                   </div>
                 </div>
-              </AnimatePresence>
+              </div>
             </div>
 
             {/* Live Contextual Detail Box */}

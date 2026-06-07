@@ -22,9 +22,10 @@ interface CostComparisonChartProps {
   totalFee: number;
   roles: RoleData[];
   setRoles: React.Dispatch<React.SetStateAction<RoleData[]>>;
+  refurbTotal?: number;
 }
 
-export default function CostComparisonChart({ totalFee, roles, setRoles }: CostComparisonChartProps) {
+export default function CostComparisonChart({ totalFee, roles, setRoles, refurbTotal }: CostComparisonChartProps) {
   const [hoveredSegment, setHoveredSegment] = useState<string | null>(null);
 
   // Helper cost calculations
@@ -53,7 +54,7 @@ export default function CostComparisonChart({ totalFee, roles, setRoles }: CostC
     );
   };
 
-  const p1ForensicDesign = 300000 + totalFee;
+  const p1ForensicDesign = refurbTotal !== undefined ? refurbTotal : (300000 + totalFee);
   const p2CleanDesign = totalFee;
 
   // Calculations
@@ -213,7 +214,7 @@ export default function CostComparisonChart({ totalFee, roles, setRoles }: CostC
           </div>
           <div className="mt-4 pt-4 border-t border-emerald-900 flex flex-col gap-2">
             <div className="text-xs text-emerald-200 leading-relaxed">
-              New Build eliminates structural risk premiums and forensic engineering cost overlays, returning <span className="font-bold text-white">AED 300,000</span> straight to client reserves.
+              New Build eliminates structural risk premiums and forensic engineering cost overlays, returning <span className="font-bold text-white">AED {(p1ForensicDesign - p2CleanDesign).toLocaleString()}</span> straight to client reserves.
             </div>
           </div>
         </div>
@@ -398,7 +399,7 @@ export default function CostComparisonChart({ totalFee, roles, setRoles }: CostC
             )}
             {hoveredSegment === 'p1-forensic' && (
               <p>
-                <strong className="text-rose-600 font-semibold">Option 1 Consultancy Cost (AED {(300000 + totalFee).toLocaleString()}):</strong> This premium reflects the AED 300,000 forensic &amp; sunk diagnostic testing combined with the design adjustment fees required to adapt existing structures.
+                <strong className="text-rose-600 font-semibold">Option 1 Consultancy Cost (AED {p1ForensicDesign.toLocaleString()}):</strong> This premium reflects the AED {(p1ForensicDesign - p2CleanDesign).toLocaleString()} forensic &amp; sunk diagnostic testing combined with the design adjustment fees required to adapt existing structures.
               </p>
             )}
             {hoveredSegment === 'p2-design' && (

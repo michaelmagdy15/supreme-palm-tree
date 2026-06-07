@@ -11,6 +11,8 @@ import SupervisionMatrix, { DEFAULT_ROLES, RoleData } from "@/components/Supervi
 export default function Home() {
   const [activeTab, setActiveTab] = useState<DashboardTab>("Executive Summary");
   const [totalFee, setTotalFee] = useState<number>(380000);
+  const [phase1Fee, setPhase1Fee] = useState<number>(340000);
+  const [phase2Fee, setPhase2Fee] = useState<number>(100000);
   const [roles, setRoles] = useState<RoleData[]>(DEFAULT_ROLES);
   const [activeScenario, setActiveScenario] = useState<string>("baseline");
 
@@ -25,6 +27,18 @@ export default function Home() {
     if (savedFee) {
       const parsed = parseInt(savedFee, 10);
       if (!isNaN(parsed)) setTotalFee(parsed);
+    }
+
+    const savedP1 = localStorage.getItem("commercial_refurb_phase1Fee");
+    if (savedP1) {
+      const parsed = parseInt(savedP1, 10);
+      if (!isNaN(parsed)) setPhase1Fee(parsed);
+    }
+
+    const savedP2 = localStorage.getItem("commercial_refurb_phase2Fee");
+    if (savedP2) {
+      const parsed = parseInt(savedP2, 10);
+      if (!isNaN(parsed)) setPhase2Fee(parsed);
     }
 
     const savedRoles = localStorage.getItem("commercial_supervision_roles");
@@ -53,12 +67,25 @@ export default function Home() {
   }, [totalFee]);
 
   useEffect(() => {
+    localStorage.setItem("commercial_refurb_phase1Fee", phase1Fee.toString());
+  }, [phase1Fee]);
+
+  useEffect(() => {
+    localStorage.setItem("commercial_refurb_phase2Fee", phase2Fee.toString());
+  }, [phase2Fee]);
+
+  useEffect(() => {
     localStorage.setItem("commercial_supervision_roles", JSON.stringify(roles));
   }, [roles]);
 
   useEffect(() => {
     localStorage.setItem("commercial_supervision_activeScenario", activeScenario);
   }, [activeScenario]);
+
+  // Derived refurbishment costs
+  const refurbSunk = phase1Fee + phase2Fee;
+  const refurbValue = totalFee;
+  const refurbTotal = refurbSunk + refurbValue;
 
   return (
     <HeaderNavbar activeTab={activeTab} onTabChange={setActiveTab}>
@@ -73,10 +100,10 @@ export default function Home() {
                 </h2>
                 <span className="text-[10px] text-slate-500 font-medium">Dubai Feasibility Unit</span>
               </div>
-              <SummaryCards totalFee={totalFee} roles={roles} setRoles={setRoles} />
+              <SummaryCards totalFee={totalFee} roles={roles} setRoles={setRoles} refurbTotal={refurbTotal} refurbSunk={refurbSunk} refurbValue={refurbValue} />
             </section>
             <section className="space-y-4">
-              <CostComparisonChart totalFee={totalFee} roles={roles} setRoles={setRoles} />
+              <CostComparisonChart totalFee={totalFee} roles={roles} setRoles={setRoles} refurbTotal={refurbTotal} />
             </section>
             <section className="rounded-xl border border-[#1E2E4F]/40 bg-[#0B1528]/50 p-4 text-xs text-slate-400 flex items-center gap-3">
               <span className="text-cyan-400 font-bold uppercase text-[10px] tracking-wider px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 shrink-0">
@@ -91,7 +118,7 @@ export default function Home() {
 
         {/* Option 1: Refurbishment Section */}
         <div className={`${activeTab === "Option 1: Refurbishment" ? "block" : "hidden print:block"} print-page-break rounded-2xl overflow-hidden border border-slate-800/80 shadow-2xl`}>
-          <RefurbishmentFees roles={roles} totalFee={totalFee} />
+          <RefurbishmentFees roles={roles} totalFee={totalFee} phase1Fee={phase1Fee} setPhase1Fee={setPhase1Fee} phase2Fee={phase2Fee} setPhase2Fee={setPhase2Fee} />
         </div>
 
         {/* Option 2: New Build Section */}

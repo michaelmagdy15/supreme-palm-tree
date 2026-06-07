@@ -46,9 +46,12 @@ interface SummaryCardsProps {
   totalFee: number;
   roles: RoleData[];
   setRoles: React.Dispatch<React.SetStateAction<RoleData[]>>;
+  refurbTotal: number;
+  refurbSunk: number;
+  refurbValue: number;
 }
 
-export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCardsProps) {
+export default function SummaryCards({ totalFee, roles, setRoles, refurbTotal, refurbSunk, refurbValue }: SummaryCardsProps) {
   // Option 2 Design Cost states
   const [selectedPhase, setSelectedPhase] = useState<number | null>(null);
   const designPhases = [
@@ -250,8 +253,8 @@ export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCards
                 <span className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                   Option 1 Refurbishment Cost
                 </span>
-                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  AED {(300000 + totalFee).toLocaleString()}
+                <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1 flex items-center">
+                  <AnimatedNumber value={refurbTotal} prefix="AED " />
                 </h3>
               </div>
               <div className="p-2.5 bg-rose-50 dark:bg-rose-950/40 rounded-xl text-rose-600 dark:text-rose-400">
@@ -288,7 +291,7 @@ export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCards
                   >
                     <div className="mt-2 text-[11px] text-slate-500 bg-rose-50/35 dark:bg-rose-950/10 rounded-lg p-2.5 border border-rose-100/30 dark:border-rose-900/30 space-y-1.5">
                       <p>
-                        <strong>Refurbishment Sunk Cost:</strong> {Math.round((300000 / (300000 + totalFee)) * 100)}% of expenditures cannot be salvaged or recovered if the building scope changes.
+                        <strong>Refurbishment Sunk Cost:</strong> {Math.round((refurbSunk / refurbTotal) * 100)}% of expenditures cannot be salvaged or recovered if the building scope changes.
                       </p>
                       <p className="text-slate-400">
                         Major items: forensic testing, structure diagnostics, concrete coring, and compiled as-built drawing redrafts.
@@ -386,7 +389,7 @@ export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCards
                   Direct Value Add Ratio
                 </span>
                 <h3 className="text-2xl font-bold text-slate-800 dark:text-slate-100 mt-1">
-                  100% vs {Math.round((totalFee / (300000 + totalFee)) * 100)}%
+                  100% vs {Math.round((refurbValue / refurbTotal) * 100)}%
                 </h3>
               </div>
               <div className="p-2.5 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl text-emerald-600 dark:text-emerald-400">
@@ -398,7 +401,7 @@ export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCards
             <div className="mt-3 flex items-center justify-between">
               <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 border border-emerald-200/50 dark:border-emerald-900/40">
                 <Sparkles className="w-3.5 h-3.5" />
-                +{100 - Math.round((totalFee / (300000 + totalFee)) * 100)}% Option 2 Premium
+                +{100 - Math.round((refurbValue / refurbTotal) * 100)}% Option 2 Premium
               </span>
               <button
                 onClick={() =>
@@ -435,11 +438,11 @@ export default function SummaryCards({ totalFee, roles, setRoles }: SummaryCards
                       <div className="flex justify-between text-[11px] text-slate-500 mb-0.5">
                         <span>Option 1 (Refurbishment)</span>
                         <span className="font-semibold text-slate-600 dark:text-slate-400">
-                          {Math.round((totalFee / (300000 + totalFee)) * 100)}%
+                          {Math.round((refurbValue / refurbTotal) * 100)}%
                         </span>
                       </div>
                       <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                        <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: `${(totalFee / (300000 + totalFee)) * 100}%` }} />
+                        <div className="h-full bg-slate-400 dark:bg-slate-600" style={{ width: `${(refurbValue / refurbTotal) * 100}%` }} />
                       </div>
                     </div>
                   </motion.div>
